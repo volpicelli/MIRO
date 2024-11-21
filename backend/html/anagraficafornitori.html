@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<div id="response"></div>
+    </body>
+    
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"></script>
+
+  <script>
+
+$.ajax({
+  url: "/api/anagraficafornitori/list",
+  method:'post',
+  data:{
+            "codice" : "",
+            "descrizione" : "Questo fornisce qualcosa",
+            "telefono" : " 123456789",
+            "pec": "tizio@pec_sempronio",
+            "email": "tizio@cao.sempronio",
+            'tipo_pagamento': " 30 giorni"
+            
+            
+                },
+  success: function( result ) {
+    console.log(result)
+    $( "#response" ).html( "<strong>" + result['success'] + result['data']['id'] + "</strong> " );
+  }
+});
+  </script>
+
+  </html>
