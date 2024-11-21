@@ -125,6 +125,14 @@ class Articoli(models.Model):
         managed = True
         db_table = 'articoli'
 
+
+class Magazzino(models.Model):
+    ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='magazzino_ordine')
+    #dummy = models.IntegerField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'magazzino'
+
 #Fattura: ID: Identificativo Numero Fattura Fornitore: Number Fornitore: chiave esterna fornitore Data Fattura: Date Data Scadenza: Date Importo: Number Pagato: Number Cantiere: Array[Cantiere] chiave esterna per tutti i cantieri a cui quella fattura fa riferimento ( molteplici perchè possibilità di scorporare ) Articoli: Array[Articoli] Ordine di rif.: Ordine
 
 class Fatture(models.Model):
