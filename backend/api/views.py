@@ -6,6 +6,8 @@ from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
+
 from .articoli_serializer import Articoliserializer
 from .azienda_serializer import Aziendaserializer
 from .cantiere_serializer import Cantiereserializer
@@ -13,6 +15,7 @@ from .cliente_seriallizer import Clienteserializer
 from .fatture_serializer  import Fattureserializer
 from .fornitori_serializer import Fornitoriserializer
 from .ordine_serializer import Ordineserializer
+from .magazzino_serializer import Magazzinoserializer
 #from .tipologialavori_serializer import TipologiaLavoriSerializer
 from .personale_serializer import Personaleserializer
 from .responsabile_serializer import Responsabileserializer
@@ -25,7 +28,7 @@ from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 #from moneyed import Money
 # Create your views here.
 from home.models import Cantiere,Articoli,Azienda,Cliente,Fatture,Fornitori,Ordine,Personale,Responsabile,TipologiaLavori,\
-                        Assegnato_Cantiere
+                        Assegnato_Cantiere,Magazzino
 
 
 class Assegnato_CantiereList(generics.ListCreateAPIView):
@@ -48,24 +51,64 @@ class Assegnato_CantiereDetail(generics.RetrieveUpdateDestroyAPIView):
         object = Assegnato_Cantiere.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
         return Response(serializer.data)
+class CantieriPersonale(APIView):
+    serializer_class = Cantiereserializer
+
+    def get(self,request,id_personale):
+        ret=[]
+        try:
+            p = Personale.objects.get(id=id_personale)
+            
+        except ObjectDoesNotExist:
+            ret.append({'Error': "Personale {} non esiste".format(id_personale)})
+            return Response(ret)
+        
+        c = p.personale_assegnato.all()
+
+        for one in c:
+            p={}
+            p ={ "id": one.cantiere.id,
+                 "nome": one.cantiere.nome,
+                 "descrizione": one.cantiere.descrizione
+            }
+            ret.append(p)
+        return Response(ret)
 
 class PersonaleSuCantiere(APIView):
     serializer_class = Personaleserializer
 
     def get(self,request,id_cantiere):
-        tmppers = Cantiere.objects.get(id=id_cantiere)
-        pers = tmppers.cantiere_personale.all()
-        """
         ret=[]
+        try:
+            c = Cantiere.objects.get(id=id_cantiere)
+            
+        except ObjectDoesNotExist:
+            ret.append({'Error': "Cantiere {} non esiste".format(id_cantiere)})
+            return Response(ret)
+        
+        pers = c.cantiere_assegnato.all()
+
+        
         
         for one in pers:
-            ret.append({'id':one.id,'wage_lordo':one.wage_lordo})
+            o = {}
+            o = {"id": one.personale.id,
+                "nome": one.personale.nome,
+                "cognome": one.personale.cognome,
+                "wage_lordo": one.personale.wage_lordo,
+                "wage_netto": one.personale.wage_netto,
+                "tipologia_lavoro_id" : one.personale.tipologia_lavoro_id,
+                "tipologia_lavoro": TipologiaLavori.objects.values('descrizione').get(pk=one.personale.tipologia_lavoro_id)['descrizione'],
+                "cantiere": one.cantiere_id
+                }
+            ret.append(o)
 
         return Response(ret)
-        """
         
-        serializer = self.serializer_class(pers,many=True)
-        return Response(serializer.data)
+        
+        #serializer = self.serializer_class(pers,many=True)
+
+        #return Response(serializer.data)
 """
         ret = {}
         for key,value in pers:
@@ -268,67 +311,7 @@ class OrdineDetail(generics.RetrieveUpdateDestroyAPIView):
         object = Ordine.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
         return Response(serializer.data)
-"""    
-class ArticoliOrdine(APIView):
-    serializer_class= Articoliserializer
 
-    def get(self,request,ordine_id):
-        serializer_class= Articoliserializer
-        o = Ordine.objects.get(pk=ordine_id)
-        a = o.ordine_articoli.all()
-        serializer = self.serializer_class(a,many=True)
-
-        return Response(serializer.data)
-"""
- 
-
-"""
-class TipologiaPersonaleList(generics.ListCreateAPIView):
-    queryset = TipologiaPersonale.objects.all()
-    serializer_class = TipologiaPersonaleserializer
-
-
-class TipologiaPersonaleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TipologiaPersonale.objects.all()
-    serializer_class = TipologiaPersonaleserializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = TipologiaPersonale.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = TipologiaPersonale.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-
-
-
-
-class LavoriEffettuatiPersonaleList(generics.ListCreateAPIView):
-    queryset = LavoriEffettuatiPersonale.objects.all()
-    serializer_class = LavoriEffettuatiPersonaleserializer
-
-
-class LavoriEffettuatiPersonaleDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = LavoriEffettuatiPersonale.objects.all()
-    serializer_class = LavoriEffettuatiPersonaleserializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = LavoriEffettuatiPersonale.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = LavoriEffettuatiPersonale.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-
-"""
 
 
 
@@ -382,57 +365,48 @@ class ResponsabileCantiere(APIView):
         c = Cantiere.objects.get(pk=id_cantiere)
         r = c.responsabile
         serializer = self.serializer_class(r)
-        return Response(serializer.data)
-
-"""
-class TipologiaLavoriList(generics.ListCreateAPIView):
-    queryset = TipologiaLavori.objects.all()
-    serializer_class = TipologiaLavoriSerializer
+        return Response(serializer.data)   
 
 
-class TipologiaLavoriDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TipologiaLavori.objects.all()
-    serializer_class = TipologiaLavoriSerializer
+class MagazzinoList(generics.ListCreateAPIView):
+    queryset = Magazzino.objects.all()
+    serializer_class = Magazzinoserializer
+
+class MagazzinoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Magazzino.objects.all()
+    serializer_class = Magazzinoserializer
     
     def destroy(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
-        object = TipologiaLavori.objects.get(pk=pk).delete() #kwargs['pk'])
+        object = Magazzino.objects.get(pk=pk).delete() #kwargs['pk'])
         serializer = self.serializer_class(object)
         return Response({'Msg':'OK '+str(pk) +' deleted'})
 
     def retrieve(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
-        object = TipologiaLavori.objects.get(pk=pk) #kwargs['pk'])
+        object = Magazzino.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
         return Response(serializer.data)
-
-
-
-
-
-class LavoriFornitoriList(generics.ListCreateAPIView):
-    queryset = LavoriEffettuatiFornitori.objects.all()
-    serializer_class = LavoriEffettuatiFornitoriserializer
-
-
-class LavoriFornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = LavoriEffettuatiFornitori.objects.all()
-    serializer_class = LavoriEffettuatiFornitoriserializer
     
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = LavoriEffettuatiFornitori.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
 
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = LavoriEffettuatiFornitori.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-"""    
+class MagazzinoArticoli(APIView):
+    """
+    Lista tutti gli articoli presenti in Magazzino
 
-
+    """
+    #queryset = Magazzino.objects.all()
+    serializer_class = Articoliserializer
+    #model = Magazzino
+    
+    def get(self,request):
+        queryset = Magazzino.objects.all()
+        tret=[]
+        for one in queryset:
+            a = one.articolo
+            tret.append(a)
+        
+        ret = self.serializer_class(tret,many=True)
+        return Response(ret.data)
 
 
     

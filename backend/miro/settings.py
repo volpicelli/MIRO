@@ -42,6 +42,7 @@ MIDDLEWARE = [
 INSTALLED_APPS = [
     'jet',
     'corsheaders',
+    'drf_yasg',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

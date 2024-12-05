@@ -4,12 +4,13 @@ from api.views import ArticoliDetail,ArticoliList, AziendaDetail,AziendaList,Can
                         ClienteDetail,ClienteList,FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
                         ArticoliOrdine,OrdiniCantiere,TipologiaLavoriList,TipologiaLavoriDetail,Assegnato_CantiereList,Assegnato_CantiereDetail,\
-                        PersonaleSuCantiere,ArticoliOrdine
+                        PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoArticoli,CantieriPersonale
                 
 
 urlpatterns = [ 
 
-        path('personalecantiere/<int:id_cantiere>',PersonaleSuCantiere.as_view()),
+        path('personale/cantiere/<int:id_cantiere>',PersonaleSuCantiere.as_view()),
+        path('cantieri/personale/<int:id_personale>',CantieriPersonale.as_view()),
         path('assegnatocantiere/list', Assegnato_CantiereList.as_view()),
         path('assegnatocantiere/create', Assegnato_CantiereList.as_view()),
         path('assegnatocantiere/detail/<int:pk>', Assegnato_CantiereDetail.as_view()),
@@ -34,6 +35,14 @@ urlpatterns = [
         path('personale/detail/<int:pk>', PersonaleDetail.as_view()),
         path('personale/delete/<int:pk>', PersonaleDetail.as_view()),
         path('personale/update/<int:pk>', PersonaleDetail.as_view()),
+
+        path('magazzino/list', MagazzinoList.as_view()),
+        path('magazzino/create', MagazzinoList.as_view()),
+        path('magazzino/detail/<int:pk>', MagazzinoDetail.as_view()),
+        path('magazzino/delete/<int:pk>', MagazzinoDetail.as_view()),
+        path('magazzino/update/<int:pk>', MagazzinoDetail.as_view()),
+        path('magazzino/articoli', MagazzinoArticoli.as_view()),
+
 
         path('cantieri/list', CantiereList.as_view()),
         path('cantiere/create', CantiereList.as_view()),
