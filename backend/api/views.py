@@ -35,6 +35,17 @@ from home.models import Cantiere,Articoli,Azienda,Cliente,Fatture,Fornitori,Ordi
 class Assegnato_CantiereList(generics.ListCreateAPIView):
     queryset = Assegnato_Cantiere.objects.all()
     serializer_class = Assegnato_CantiereSerializer
+    cognome = ""
+    cantiere = ""
+
+    def post(self, request, *args, **kwargs):
+        personale = request.POST['personale']
+        cantiere = request.POST['cantiere']
+        p = Personale.objects.get(pk=personale)
+        #c = Cantiere.objects.get(pk=cantiere)
+        self.cognome  = p.cognome
+        self.cantiere = cantiere
+        return self.create(request, *args, **kwargs)
 
     def handle_exception(self, exc):
         """
@@ -61,7 +72,8 @@ class Assegnato_CantiereList(generics.ListCreateAPIView):
             self.raise_uncaught_exception(exc)
 
         response.exception = True
-        response.data["errors"]="Personale gia assegnato al cantiere"
+        response.data.pop('non_field_errors')
+        response.data["warning"]="Personale {} gia assegnato al cantiere {}".format(self.cognome.upper(),self.cantiere)
         return response
 
 
