@@ -93,6 +93,7 @@ class Assegnato_Cantiere(models.Model):
         personale = models.ForeignKey(Personale,null=True,on_delete=models.CASCADE,related_name='personale_assegnato')
         cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_assegnato')
         class Meta:
+            unique_together = ('personale', 'cantiere')
             managed = True
             db_table = 'assegnato_cantiere'
 #Ordine: ID: Identificativo Data Ordine: Date Fornitore: (Identificativo) Chiave esterna del fornitore da cui è stato effettuato ordine Articoli: Array[Articoli]
