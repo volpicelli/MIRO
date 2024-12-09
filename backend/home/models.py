@@ -73,10 +73,16 @@ class Fornitori(models.Model):
     class ClienteFornitore(models.TextChoices):
         CLIENTE = "C"
         FORNITORE = "F"
+    class Sesso(models.TextChoices):
+        MASCHIO='M'
+        FEMMINA='F'
+    class PersonaSocieta(models.TextChoices):
+        Persona='P'
+        Societa='S'
 
-    clfr = models.CharField(max_length=2, choices=ClienteFornitore.choices,
-        default=ClienteFornitore.CLIENTE, blank=True, null=True)
-    nome = models.CharField(max_length=60, blank=True, null=True)
+#    clfr = models.CharField(max_length=2, choices=ClienteFornitore.choices,
+#        default=ClienteFornitore.CLIENTE, blank=True, null=True)
+    codcf = models.CharField(max_length=60, blank=True, null=True)
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     indirizzo = models.CharField(max_length=100,blank=True, null=True)
     cap = models.CharField(max_length=20,blank=True, null=True)
@@ -87,15 +93,18 @@ class Fornitori(models.Model):
     descrizione = models.TextField(blank=True, null=True)
     #codpag = models.CharField(max_length=10, blank=True, default="", unique=True)
     codpag = models.ForeignKey(CondizioniPagamento,null=True,on_delete=models.CASCADE,related_name='pppp',to_field='codpag')
+    persoc = models.CharField(max_length=2,blank=True, null=True,choices=PersonaSocieta.choices)
 
-    #codpag = models.OneToOneField(CondizioniPagamento,
-    #    on_delete=models.CASCADE,
-        #primary_key=True,
-    #)
     telefono = models.CharField(max_length=40, blank=True, null=True)
     cellulare = models.CharField(max_length=40, blank=True, null=True)
-    pec = models.CharField(max_length=40, blank=True, null=True)
+    pec_fe = models.CharField(max_length=40, blank=True, null=True)
+    fax = models.CharField(max_length=40, blank=True, null=True)
     email = models.CharField(max_length=40, blank=True, null=True)
+    resprap = models.CharField(max_length=40, blank=True, null=True)
+    fmemo = models.TextField( blank=True, null=True)
+    nome_pf = models.CharField(max_length=40, blank=True, null=True)
+    cogn_pf = models.CharField(max_length=40, blank=True, null=True)
+    sesso = models.CharField(max_length=2, blank=True, null=True,choices=Sesso.choices)
 
     banca = models.CharField(max_length=40,blank=True, null=True)
     iban = models.CharField(max_length=40,blank=True, null=True)
@@ -106,9 +115,22 @@ class Fornitori(models.Model):
         managed = True
         db_table = 'fornitori'
 
+class Sesso(models.TextChoices):
+        MASCHIO='M'
+        FEMMINA='F'
 
 class Cliente(models.Model):
-    nome = models.CharField(max_length=60, blank=True, null=True)
+    class ClienteFornitore(models.TextChoices):
+        CLIENTE = "C"
+        FORNITORE = "F"
+    
+    class PersonaSocieta(models.TextChoices):
+        Persona='P'
+        Societa='S'
+
+#    clfr = models.CharField(max_length=2, choices=ClienteFornitore.choices,
+#        default=ClienteFornitore.CLIENTE, blank=True, null=True)
+    codcf = models.CharField(max_length=60, blank=True, null=True)
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     indirizzo = models.CharField(max_length=100,blank=True, null=True)
     cap = models.CharField(max_length=20,blank=True, null=True)
@@ -116,23 +138,33 @@ class Cliente(models.Model):
     prov = models.CharField(max_length=40,blank=True, null=True)
     codfisc = models.CharField(max_length=40,blank=True, null=True)
     partiva = models.CharField(max_length=40,blank=True, null=True)
-    descrizione = models.TextField(blank=True, null=True)
-    codpag = models.CharField(max_length=10, blank=True, null=True)
+    #descrizione = models.TextField(blank=True, null=True)
+    #codpag = models.ForeignKey(CondizioniPagamento,null=True,on_delete=models.CASCADE,related_name='pppp',to_field='codpag')
+    persoc = models.CharField(max_length=2,blank=True, null=True,choices=PersonaSocieta.choices)
+
     telefono = models.CharField(max_length=40, blank=True, null=True)
     cellulare = models.CharField(max_length=40, blank=True, null=True)
-    pec = models.CharField(max_length=40, blank=True, null=True)
+    pec_fe = models.CharField(max_length=40, blank=True, null=True)
+    fax = models.CharField(max_length=40, blank=True, null=True)
     email = models.CharField(max_length=40, blank=True, null=True)
+    #resprap = models.CharField(max_length=40, blank=True, null=True)
+    fmemo = models.TextField( blank=True, null=True)
+    nome_pf = models.CharField(max_length=40, blank=True, null=True)
+    cogn_pf = models.CharField(max_length=40, blank=True, null=True)
+    sesso = models.CharField(max_length=2, blank=True, null=True,choices=Sesso.choices)
 
     banca = models.CharField(max_length=40,blank=True, null=True)
     iban = models.CharField(max_length=40,blank=True, null=True)
- 
-    #cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_cliente')
+
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_cliente')
 
     class Meta:
         managed = True
         db_table = 'cliente'
 
+    def getSesso(self):
+        
+        return getattr(self.Countries, self.name)
 
 #Cantiere: ID: Identificativo Nome: String Descrizione: String Responsabile : Chiave esterna del responsabile del cantiere
 #Data Inizio: Date Data Fine: Date Status: Boolean Fatture: Array[Fattura] (array di chiavi esterne delle fatture che hanno articoli facente parte del cantiere) Ordini: Array[Ordine] (array di chiavi esterne delle fatture che hanno articoli facente parte del cantiere) Lavoratori: Lista di oggetti Lavoratore ID: String Nome: String Cognome: String Lavoro: String Wage Lordo: String Wage Netto: String

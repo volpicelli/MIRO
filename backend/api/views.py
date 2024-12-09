@@ -331,6 +331,12 @@ class ClienteDetail(generics.RetrieveUpdateDestroyAPIView):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+class ClientePersoc(APIView):
+    def get(self,request):
+        c = Cliente.persoc.field.choices
+    
+        return Response(c)
  
 class FattureList(generics.ListCreateAPIView):
     queryset = Fatture.objects.all()
@@ -376,6 +382,11 @@ class FornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.serializer_class(object)
         return Response(serializer.data)
 
+
+class OrdineGetTipologia(APIView):
+    def get(self,request):
+        o = Ordine.tipologia.field.choices
+        return Response(o)
 
 class OrdineList(generics.ListCreateAPIView):
     queryset = Ordine.objects.all()

@@ -4,7 +4,8 @@ from api.views import ArticoliDetail,ArticoliList, AziendaDetail,AziendaList,Can
                         ClienteDetail,ClienteList,FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         ArticoliOrdine,OrdiniCantiere,TipologiaLavoriList,TipologiaLavoriDetail,Assegnato_CantiereList,Assegnato_CantiereDetail,\
-                        PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoArticoli,CantieriPersonale
+                        PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoArticoli,CantieriPersonale,\
+                        ClientePersoc,OrdineGetTipologia
                 
                         #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
 
@@ -69,6 +70,7 @@ urlpatterns = [
         path('azienda/delete/<int:pk>', AziendaDetail.as_view()),
         path('azienda/update/<int:pk>',AziendaDetail.as_view()),
 
+        path('cliente/getpersoc', ClientePersoc.as_view()),
         path('cliente/list', ClienteList.as_view()),
         path('cliente/create',ClienteList.as_view()),
         path('cliente/detail/<int:pk>',ClienteDetail.as_view()),
@@ -81,6 +83,8 @@ urlpatterns = [
         path('fatture/delete/<int:pk>', FattureDetail.as_view()),
         path('fatture/update/<int:pk>',FattureDetail.as_view()),
 
+
+        path('ordine/getTipologia', OrdineGetTipologia.as_view()),
         path('ordine/list', OrdineList.as_view()),
         path('ordine/create',OrdineList.as_view()),
         path('ordine/detail/<int:pk>',OrdineDetail.as_view()),
