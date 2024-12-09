@@ -247,19 +247,11 @@ class Ordine(models.Model):
         db_table = 'ordine'
 
 
-class Magazzino(models.Model):
-    #articolo = models.ForeignKey(Articoli,null=True,on_delete=models.CASCADE,related_name='magazzino_articoli')
-    ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
-
-    dummy = models.IntegerField(blank=True, null=True)
-    class Meta:
-        managed = True
-        db_table = 'magazzino'
 
 #Articolo ID : Identificativo Nome : String Descrizione : String Importo : Number
 
 class Articoli(models.Model):
-    nome = models.CharField(max_length=60, blank=True, null=True)
+    #nome = models.CharField(max_length=60, blank=True, null=True)
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
     importo = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) #MoneyField(max_digits=14, decimal_places=2, default_currency='EUR')
@@ -270,6 +262,13 @@ class Articoli(models.Model):
         managed = True
         db_table = 'articoli'
 
+class Magazzino(models.Model):
+    articolo = models.ForeignKey(Articoli,null=True,on_delete=models.CASCADE,related_name='magazzino_articoli')
+    #ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
+    quantita = models.IntegerField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'magazzino'
 
 
 
