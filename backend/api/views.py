@@ -19,7 +19,7 @@ from .ordine_serializer import Ordineserializer
 from .magazzino_serializer import Magazzinoserializer
 #from .tipologialavori_serializer import TipologiaLavoriSerializer
 from .personale_serializer import Personaleserializer
-from .responsabile_serializer import Responsabileserializer
+#from .responsabile_serializer import Responsabileserializer
 from .tipologialavori_serializer import TipologiaLavoriSerializer
 from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 
@@ -28,8 +28,40 @@ from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 #from .tipologiapersonale_serializer import TipologiaPersonaleserializer
 #from moneyed import Money
 # Create your views here.
-from home.models import Cantiere,Articoli,Azienda,Cliente,Fatture,Fornitori,Ordine,Personale,Responsabile,TipologiaLavori,\
-                        Assegnato_Cantiere,Magazzino
+from home.models import Cantiere,Articoli,Azienda,Cliente,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
+
+
+class ResponsabileCantiere(APIView):
+    serializer_class = Personaleserializer
+
+    def get(self,request,id_cantiere):
+        ret=[]
+        try:
+            ac = Assegnato_Cantiere.objects.get(cantiere=id_cantiere,responsabile=True)
+            
+        except ObjectDoesNotExist:
+            ret.append({'Warning': "Sul Cantiere {}  Responsabile non assegnato".format(id_cantiere)})
+            return Response(ret)
+        
+        c = ac.personale  #_assegnato.all()
+
+        #for one in c:
+        #p={}
+        p ={ "id": c.id,
+                "nome": c.nome,
+                "cognome": c.cognome,
+                "wage_lordo" : c.wage_lordo,
+                "wage_netto" : c.wage_netto
+        }
+            #ret.append(p)
+        return Response(p)
+"""
+    def get(self,request,id_cantiere):
+        a = Assegnato_Cantiere.objects.get(cantiere=id_cantiere,responsabile=True)
+        #a = o.ordine_articoli.all()
+        serializer = self.serializer_class(a.personale,many=True)
+        return Response(serializer.data)
+"""
 
 
 class Assegnato_CantiereList(generics.ListCreateAPIView):
@@ -377,7 +409,7 @@ class PersonaleDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.serializer_class(object)
         return Response(serializer.data)
 
-
+"""
 class ResponsabileList(generics.ListCreateAPIView):
     queryset = Responsabile.objects.all()
     serializer_class = Responsabileserializer
@@ -408,24 +440,25 @@ class ResponsabileCantiere(APIView):
         serializer = self.serializer_class(r)
         return Response(serializer.data)   
 
-
+"""
 class MagazzinoList(generics.ListCreateAPIView):
-    queryset = Magazzino.objects.all()
-    serializer_class = Magazzinoserializer
+    queryset = Ordine.objects.filter(magazzino=True)
+    serializer_class = Ordineserializer
 
 class MagazzinoDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Magazzino.objects.all()
-    serializer_class = Magazzinoserializer
+    queryset = Ordine.objects.filter(magazzino=True)
+    serializer_class = Ordineserializer
     
     def destroy(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
-        object = Magazzino.objects.get(pk=pk).delete() #kwargs['pk'])
+        object = Ordine.objects.get(pk=pk) #.delete() #kwargs['pk'])
+        object.magazzino = False
         serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
+        return Response({'Msg':'OK '+str(pk) +' Non piu in magazzino'})
 
     def retrieve(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
-        object = Magazzino.objects.get(pk=pk) #kwargs['pk'])
+        object = Ordine.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
         return Response(serializer.data)
     

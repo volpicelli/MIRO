@@ -1,15 +1,17 @@
 
 from django.urls import path
-from api.views import ArticoliDetail,ArticoliList, AziendaDetail,AziendaList,CantiereDetail,CantiereList,\
+from api.views import ArticoliDetail,ArticoliList, AziendaDetail,AziendaList,CantiereDetail,CantiereList,ResponsabileCantiere,\
                         ClienteDetail,ClienteList,FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
-                        OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
+                        OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         ArticoliOrdine,OrdiniCantiere,TipologiaLavoriList,TipologiaLavoriDetail,Assegnato_CantiereList,Assegnato_CantiereDetail,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoArticoli,CantieriPersonale
                 
+                        #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
 
 urlpatterns = [ 
 
         path('personale/cantiere/<int:id_cantiere>',PersonaleSuCantiere.as_view()),
+        path('responsabile/cantiere/<int:id_cantiere>',ResponsabileCantiere.as_view()),
         path('cantieri/personale/<int:id_personale>',CantieriPersonale.as_view()),
         path('assegnatocantiere/list', Assegnato_CantiereList.as_view()),
         path('assegnatocantiere/create', Assegnato_CantiereList.as_view()),
@@ -89,7 +91,11 @@ urlpatterns = [
         path('ordini/cantiere/<int:id_cantiere>',OrdiniCantiere.as_view()),
 
 
+        
 
+]
+    
+"""
         path('responsabile/list', ResponsabileList.as_view()),
         path('responsabile/create',ResponsabileList.as_view()),
         path('responsabile/detail/<int:pk>',ResponsabileDetail.as_view()),
@@ -97,7 +103,4 @@ urlpatterns = [
         path('responsabile/update/<int:pk>',ResponsabileDetail.as_view()),
 
         path('responsabile/cantiere/<int:id_cantiere>',ResponsabileCantiere.as_view()),
-
-
-]
-    
+"""
