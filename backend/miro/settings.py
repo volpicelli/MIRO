@@ -42,15 +42,18 @@ MIDDLEWARE = [
 INSTALLED_APPS = [
     'jet',
     'corsheaders',
-    'drf_yasg',
+    #'drf_yasg',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #"graphene_django",
     'rest_framework',
-    'djmoney',
+    #'user', # Add this
+    'rest_framework.authtoken' ,
+    #'djmoney',
     'api',
     'home',
 ]
@@ -70,6 +73,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #'api.api_context_processors.message_context',
+
             ],
         },
     },
@@ -84,7 +89,7 @@ WSGI_APPLICATION = 'miro.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": 'django.db.backends.postgresql' ,
-        "NAME": 'miro2',
+        "NAME": 'miro3',
         "USER": 'postgres',
         "PASSWORD": 'postgres',
         "HOST": "localhost",
@@ -143,5 +148,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     "http://10.0.0.145:3001",
 #     "http://localhost:3000",
 # ]
-
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # Add this line
+    ],
+   # 'DEFAULT_PERMISSION_CLASSES': (
+   #     'rest_framework.permissions.IsAuthenticated',
+    #),
+}
+#AZIENDACODCF= 2 #"MIRO"
