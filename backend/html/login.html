@@ -22,7 +22,7 @@
   <script>
 
 $.ajax({
-  url: "/api/api-token-auth/",
+  url: "/api/login",
   method:'post',
   data:{
             "username" : "pippo",
@@ -30,9 +30,11 @@ $.ajax({
                 },
   success: function( result ) {
     console.log(result)
-    $( "#response" ).html( "<strong>" + result['token'] + "</strong> " );
+    $( "#response" ).html( "<strong>" + result + "</strong> " );
   }
-});
+}).fail(function (error) {
+    console.log("Error retrieving token:", error);
+	  });
   </script>
 
   </html>

@@ -28,11 +28,56 @@ from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 #from .tipologiapersonale_serializer import TipologiaPersonaleserializer
 #from moneyed import Money
 # Create your views here.
-from home.models import Cantiere,Articoli,Azienda,Cliente,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
+from home.models import Cantiere,Articoli,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
 
+import json
+from django.conf import settings
+from django.contrib.auth import authenticate
+
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                       context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        all = user.userazienda.all()
+        az= []
+        for one in all:
+            az.append( one.azienda.id )
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'azienda': az,
+            'email': user.email
+        })
+
+class LoginView(APIView):
+    #authentication_classes = [TokenAuthentication]
+
+    def post(self, request):
+        # Your authentication logic here
+        return Response({'user': request.POST.get('username'),'pasword': request.POST.get('password')})
+
+        user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key})
+        else:
+            return Response({'error': 'Invalid credentials'}, status=401)
 
 class ResponsabileCantiere(APIView):
     serializer_class = Personaleserializer
+    permission_classes = [IsAuthenticated]
+
 
     def get(self,request,id_cantiere):
         ret=[]
@@ -64,66 +109,6 @@ class ResponsabileCantiere(APIView):
 """
 
 
-class Assegnato_CantiereList(generics.ListCreateAPIView):
-    queryset = Assegnato_Cantiere.objects.all()
-    serializer_class = Assegnato_CantiereSerializer
-    cognome = ""
-    cantiere = ""
-
-    def post(self, request, *args, **kwargs):
-        personale = request.POST['personale']
-        cantiere = request.POST['cantiere']
-        p = Personale.objects.get(pk=personale)
-        #c = Cantiere.objects.get(pk=cantiere)
-        self.cognome  = p.cognome
-        self.cantiere = cantiere
-        return self.create(request, *args, **kwargs)
-
-    def handle_exception(self, exc):
-        """
-        Handle any exception that occurs, by returning an appropriate response,
-        or re-raising the error.
-        """
-        if isinstance(exc, (exceptions.NotAuthenticated,
-                            exceptions.AuthenticationFailed)):
-            # WWW-Authenticate header for 401 responses, else coerce to 403
-            auth_header = self.get_authenticate_header(self.request)
-
-            if auth_header:
-                exc.auth_header = auth_header
-            else:
-                exc.status_code = status.HTTP_403_FORBIDDEN
-
-        exception_handler = self.get_exception_handler()
-
-        context = self.get_exception_handler_context()
-        #context="POLLO"
-        response = exception_handler(exc, context)
-
-        if response is None:
-            self.raise_uncaught_exception(exc)
-
-        response.exception = True
-        response.data.pop('non_field_errors')
-        response.data["warning"]="Personale {} gia assegnato al cantiere {}".format(self.cognome.upper(),self.cantiere)
-        return response
-
-
-class Assegnato_CantiereDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Assegnato_Cantiere.objects.all()
-    serializer_class = Assegnato_CantiereSerializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Assegnato_Cantiere.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Assegnato_Cantiere.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
 class CantieriPersonale(APIView):
     serializer_class = Cantiereserializer
 
@@ -182,165 +167,19 @@ class PersonaleSuCantiere(APIView):
         #serializer = self.serializer_class(pers,many=True)
 
         #return Response(serializer.data)
-"""
-        ret = {}
-        for key,value in pers:
-            ret['key'] = value
-        return Response(ret)
-"""
-
-class TipologiaLavoriList(generics.ListCreateAPIView):
-    queryset = TipologiaLavori.objects.all()
-    serializer_class = TipologiaLavoriSerializer
-
-
-class TipologiaLavoriDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TipologiaLavori.objects.all()
-    serializer_class = TipologiaLavoriSerializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = TipologiaLavori.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = TipologiaLavori.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-
-class ArticoliList(generics.ListCreateAPIView):
-    queryset = Articoli.objects.all()
-    serializer_class = Articoliserializer
-
-
-class ArticoliDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Articoli.objects.all()
-    serializer_class = Articoliserializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Articoli.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Articoli.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-    
-class ArticoliOrdine(APIView):
-    serializer_class = Articoliserializer
-
-    def get(self,request,id_ordine):
-        o = Ordine.objects.get(pk=id_ordine)
-        a = o.ordine_articoli.all()
-        serializer = self.serializer_class(a,many=True)
-        return Response(serializer.data)
 
 
 
 
-class AziendaList(generics.ListCreateAPIView):
-    queryset = Azienda.objects.all()
-    serializer_class = Aziendaserializer
 
 
-class AziendaDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Azienda.objects.all()
-    serializer_class = Aziendaserializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Azienda.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
 
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Azienda.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-    
-class CantiereList(generics.ListCreateAPIView):
-    queryset = Cantiere.objects.all()
-    serializer_class = Cantiereserializer
 
-    
-
-class CantiereDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Cantiere.objects.all()
-    serializer_class = Cantiereserializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Cantiere.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Cantiere.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-    
-class OrdiniCantiere(APIView):
-    serializer_class = Ordineserializer
-
-    def get(self,request,id_cantiere):
-        c = Cantiere.objects.get(pk=id_cantiere)
-        o = c.cantiere_ordine.all()
-        serializer = self.serializer_class(o,many=True)
-
-        return Response(serializer.data)
-
- 
-class ClienteList(generics.ListCreateAPIView):
-    queryset = Cliente.objects.all()
-    serializer_class = Clienteserializer
-
-    
-
-class ClienteDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Cliente.objects.all()
-    serializer_class = Clienteserializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Cliente.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Cliente.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
-
-class ClientePersoc(APIView):
-    def get(self,request):
-        c = Cliente.persoc.field.choices
-    
-        return Response(c)
  
 class FattureList(generics.ListCreateAPIView):
     queryset = Fatture.objects.all()
     serializer_class = Fattureserializer
+    permission_classes = [IsAuthenticated]
 
     
 
@@ -364,6 +203,7 @@ class FattureDetail(generics.RetrieveUpdateDestroyAPIView):
 class FornitoriList(generics.ListCreateAPIView):
     queryset = Fornitori.objects.all()
     serializer_class = Fornitoriserializer
+    permission_classes = [IsAuthenticated]
 
 
 class FornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -378,15 +218,177 @@ class FornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def retrieve(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
+
         object = Fornitori.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
-        return Response(serializer.data)
+        user = request.user.last_name
+        ss={}
+        ss['q']=serializer.data
+        ss['user']=user
+        return Response(ss)#erializer.data)
 
 
 class OrdineGetTipologia(APIView):
     def get(self,request):
         o = Ordine.tipologia.field.choices
         return Response(o)
+
+class OrdineCreate(APIView):
+    def post(self,request):
+        data = json.loads(request.body)
+        # Ordine con Fornitore e Cantiere 
+        # mestesso=false magazzino = false
+        # Tipologia qualsiasi
+        if data['magazzino'] is not True and data['mestesso'] is not True:
+            try:
+                f = Fornitori.objects.get(pk=data['fornitore'])
+            except ObjectDoesNotExist:
+                error_msg=" Fornitore non esiste"
+
+            try:
+                c  = Cantiere.objects.get(pk=data['cantiere'])
+            except ObjectDoesNotExist:
+                error_msg=" Cantiere non esiste"
+
+            o = Ordine( cantiere=c,
+                        fornitore=f,
+                        data_ordine=data['data_ordine'],
+                        importo=data['importo'],
+                        #magazzino=data['magazzino'],
+                        #mestesso=data['mestesso'],
+                        tipologia=data['tipologia']
+                        )
+            o.save()
+            for one in data['articoli']:
+                a = Articoli()
+                a.ordine=o
+                a.descrizione=one['descrizione']
+                a.quantita = one['quantita']
+                a.prezzo_unitario = one['prezzo_unitario']
+                a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
+                a.save()
+
+            
+            os = Ordineserializer(o)
+
+        # Ordine con Fornitore no Cantiere
+        # mestesso=false magazzino = true
+        # Tipologia MATERIALE 
+        # Materiale in magazzino
+        if data['magazzino'] and data['tipologia']=='MA':
+
+
+            try:
+                f = Fornitori.objects.get(pk=data['fornitore'])
+            except ObjectDoesNotExist:
+                error_msg=" Fornitore non esiste"
+
+            o = Ordine( #cantiere=c,
+                        fornitore=f,
+                        data_ordine=data['data_ordine'],
+                        importo=data['importo'],
+                        magazzino=True,
+                        #mestesso=data['mestesso'],
+                        tipologia='MA'
+                        )
+            o.save()
+            for one in data['articoli']:
+                a = Magazzino()
+                a.ordine=o
+                a.descrizione=one['descrizione']
+                a.quantita = one['quantita']
+                a.prezzo_unitario = one['prezzo_unitario']
+                a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
+                a.save()
+            os = Ordineserializer(o)
+
+        # Ordine dove Fornitore mestesso 
+        # mestesso=true magazzino = false
+        # Tipologia MATERIALE
+
+        if data['mestesso']:
+            try:
+                f = Fornitori.objects.get(pk=data['fornitore']) # Fornitore questa azienda
+            except ObjectDoesNotExist:
+                error_msg=" Fornitore non esiste"
+
+            o = Ordine( #cantiere=c,
+                        fornitore=f,
+                        data_ordine=data['data_ordine'],
+                        importo=data['importo'],
+                        #magazzino=False,
+                        mestesso=True, #data['mestesso'],
+                        tipologia='MA'
+                        )
+            o.save()
+            os = Ordineserializer(o)
+            os.data['POLLO'] = "POLLO"
+            ret={}
+            ret = os.data
+            m = Magazzino.objects.all()
+            #data['articoli']=[]
+            tmp = []
+            for one in m:
+                tmp.append(one)
+            
+            ms = Magazzinoserializer(tmp,many=True)
+            ret['articoli']= ms.data
+            #os.data['articoli']=ms
+                
+        return Response(ret)
+
+
+class OrdineDaMagazzino(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(sef,request):
+        m = Magazzino.objects.all()
+            #data['articoli']=[]
+        tmp = []
+        ret={}
+        for one in m:
+            tmp.append(one)
+        
+        ms = Magazzinoserializer(tmp,many=True)
+        ret['articoli']= ms.data
+        #os.data['articoli']=ms
+            
+        return Response(ret)
+
+    def post(self,request):
+        data = json.loads(request.body)
+        
+
+        if data['mestesso']:
+            try:
+                f = Fornitori.objects.get(pk=data['fornitore']) # Fornitore questa azienda
+            except ObjectDoesNotExist:
+                error_msg=" Fornitore non esiste"
+
+            o = Ordine( #cantiere=c,
+                        fornitore=f,
+                        data_ordine=data['data_ordine'],
+                        importo=data['importo'],
+                        #magazzino=False,
+                        mestesso=True, #data['mestesso'],
+                        tipologia='MA'
+                        )
+            o.save()
+            os = Ordineserializer(o)
+            os.data['POLLO'] = "POLLO"
+            ret={}
+            ret = os.data
+            m = Magazzino.objects.all()
+            #data['articoli']=[]
+            tmp = []
+            for one in m:
+                tmp.append(one)
+            
+            ms = Magazzinoserializer(tmp,many=True)
+            ret['articoli']= ms.data
+            #os.data['articoli']=ms
+                
+        return Response(ret)
 
 class OrdineList(generics.ListCreateAPIView):
     queryset = Ordine.objects.all()
@@ -467,12 +469,12 @@ class ResponsabileCantiere(APIView):
 
 """
 class MagazzinoList(generics.ListCreateAPIView):
-    queryset = Ordine.objects.filter(magazzino=True)
-    serializer_class = Ordineserializer
+    queryset = Magazzino.objects.all()
+    serializer_class = Magazzinoserializer
 
 class MagazzinoDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Ordine.objects.filter(magazzino=True)
-    serializer_class = Ordineserializer
+    queryset = Magazzino.objects.all()
+    serializer_class = Magazzinoserializer
     
     def destroy(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
@@ -502,10 +504,19 @@ class MagazzinoArticoli(APIView):
         tret=[]
         for one in queryset:
             a = one.articolo
-            tret.append(a)
+            ret = self.serializer_class(a)
+            
+            o = a.ordine
+            os = Ordineserializer(o)
+            ret.data['ordine']= os.data
+
+            tret.append(ret)
+
+
         
-        ret = self.serializer_class(tret,many=True)
-        return Response(ret.data)
+        #ret = self.serializer_class(tret,many=True)
+        #ret.data[0]['ordine']= os.data
+        return Response(tret)
 
 
     

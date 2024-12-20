@@ -1,15 +1,33 @@
 
 from django.urls import path
-from api.views import ArticoliDetail,ArticoliList, AziendaDetail,AziendaList,CantiereDetail,CantiereList,ResponsabileCantiere,\
-                        ClienteDetail,ClienteList,FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
+from api.view_azienda import *
+from api.view_tipologia_lavori import *
+from api.view_articoli import *
+from api.view_assegnato_cantiere import *
+from api.view_cliente import *
+from api.view_cantiere import *
+from rest_framework.authtoken.views import obtain_auth_token  
+from api.views import   ResponsabileCantiere,\
+                        FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
-                        ArticoliOrdine,OrdiniCantiere,TipologiaLavoriList,TipologiaLavoriDetail,Assegnato_CantiereList,Assegnato_CantiereDetail,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoArticoli,CantieriPersonale,\
-                        ClientePersoc,OrdineGetTipologia
+                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,LoginView,CustomAuthToken
                 
                         #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
 
 urlpatterns = [ 
+        path('api-token-auth/', CustomAuthToken.as_view(), name='api_token_auth'),  # <-- And here
+
+        path('login',LoginView.as_view()),
+        path('ordinedamagazzino',OrdineDaMagazzino.as_view()),
+        path('ordinecreate',OrdineCreate.as_view()),
+        path('azienda/<int:azienda_id>/clienti',ClientiAzienda.as_view()),
+        path('azienda/<int:azienda_id>/cantieri',CantieriAzienda.as_view()),
+        path('azienda/<int:azienda_id>/personale',PersonaleAzienda.as_view()),
+        path('azienda/<int:azienda_id>/personale/cantiere/<int:cantiere_id>',PersonaleAziendaCantiere.as_view()),
+        
+
+
 
         path('personale/cantiere/<int:id_cantiere>',PersonaleSuCantiere.as_view()),
         path('responsabile/cantiere/<int:id_cantiere>',ResponsabileCantiere.as_view()),
@@ -47,7 +65,8 @@ urlpatterns = [
         path('magazzino/articoli', MagazzinoArticoli.as_view()),
 
 
-        path('cantieri/list', CantiereList.as_view()),
+        path('cantieri/list/<int:id_cliente>/<int:id_azienda>', CantiereList.as_view()),
+        #path('cantieri/list', CantiereList.as_view()),
         path('cantiere/create', CantiereList.as_view()),
         path('cantiere/detail/<int:pk>',CantiereDetail.as_view()),
         path('cantiere/delete/<int:pk>', CantiereDetail.as_view()),
@@ -63,7 +82,9 @@ urlpatterns = [
         path('articoli/update/<int:pk>',ArticoliDetail.as_view()),
 
         path('articoli/ordine/<int:id_ordine>',ArticoliOrdine.as_view()),
-        
+
+        path('azienda/setcurrent/<int:id_azienda>', SetCurrentAzienda.as_view()),
+        path('azienda/getcurrent', CurrentAzienda.as_view()),
         path('azienda/list', AziendaList.as_view()),
         path('azienda/create',AziendaList.as_view()),
         path('azienda/detail/<int:pk>',AziendaDetail.as_view()),
@@ -71,6 +92,7 @@ urlpatterns = [
         path('azienda/update/<int:pk>',AziendaDetail.as_view()),
 
         path('cliente/getpersoc', ClientePersoc.as_view()),
+        path('cliente/listall', ClienteListAll.as_view()),
         path('cliente/list', ClienteList.as_view()),
         path('cliente/create',ClienteList.as_view()),
         path('cliente/detail/<int:pk>',ClienteDetail.as_view()),
@@ -99,12 +121,3 @@ urlpatterns = [
 
 ]
     
-"""
-        path('responsabile/list', ResponsabileList.as_view()),
-        path('responsabile/create',ResponsabileList.as_view()),
-        path('responsabile/detail/<int:pk>',ResponsabileDetail.as_view()),
-        path('responsabile/delete/<int:pk>', ResponsabileDetail.as_view()),
-        path('responsabile/update/<int:pk>',ResponsabileDetail.as_view()),
-
-        path('responsabile/cantiere/<int:id_cantiere>',ResponsabileCantiere.as_view()),
-"""
