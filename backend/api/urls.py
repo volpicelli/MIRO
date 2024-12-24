@@ -1,5 +1,5 @@
 
-from django.urls import path
+from django.urls import path,re_path
 from api.view_azienda import *
 from api.view_tipologia_lavori import *
 from api.view_articoli import *
@@ -7,7 +7,7 @@ from api.view_assegnato_cantiere import *
 from api.view_cliente import *
 from api.view_cantiere import *
 from rest_framework.authtoken.views import obtain_auth_token  
-from api.views import   ResponsabileCantiere,\
+from api.views import   ResponsabileCantiere,AddOreLavoro,FattureOrdine,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoArticoli,CantieriPersonale,\
@@ -27,7 +27,7 @@ urlpatterns = [
         path('azienda/<int:azienda_id>/personale/cantiere/<int:cantiere_id>',PersonaleAziendaCantiere.as_view()),
         
 
-
+        path('addorelavoro/cantiere/<int:cantiere_id>/personale/<int:personale_id>/<int:ore>',AddOreLavoro.as_view()),
 
         path('personale/cantiere/<int:id_cantiere>',PersonaleSuCantiere.as_view()),
         path('responsabile/cantiere/<int:id_cantiere>',ResponsabileCantiere.as_view()),
@@ -65,8 +65,9 @@ urlpatterns = [
         path('magazzino/articoli', MagazzinoArticoli.as_view()),
 
 
-        path('cantieri/list/<int:id_cliente>/<int:id_azienda>', CantiereList.as_view()),
-        #path('cantieri/list', CantiereList.as_view()),
+        path('cantieri/list', CantiereList.as_view()),
+        
+        path('cantieri/azienda/<int:azienda_id>', CantieriAzienda.as_view()),
         path('cantiere/create', CantiereList.as_view()),
         path('cantiere/detail/<int:pk>',CantiereDetail.as_view()),
         path('cantiere/delete/<int:pk>', CantiereDetail.as_view()),
@@ -94,11 +95,14 @@ urlpatterns = [
         path('cliente/getpersoc', ClientePersoc.as_view()),
         path('cliente/listall', ClienteListAll.as_view()),
         path('cliente/list', ClienteList.as_view()),
+
         path('cliente/create',ClienteList.as_view()),
         path('cliente/detail/<int:pk>',ClienteDetail.as_view()),
         path('cliente/delete/<int:pk>', ClienteDetail.as_view()),
         path('cliente/update/<int:pk>',ClienteDetail.as_view()),
 
+
+        path('fatture/ordine/<int:ordine_id>', FattureOrdine.as_view()),
         path('fatture/list', FattureList.as_view()),
         path('fatture/create',FattureList.as_view()),
         path('fatture/detail/<int:pk>',FattureDetail.as_view()),

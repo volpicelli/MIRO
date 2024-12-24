@@ -23,7 +23,7 @@ from .cantiere_serializer import Cantiereserializer
 #from .tipologiapersonale_serializer import TipologiaPersonaleserializer
 #from moneyed import Money
 # Create your views here.
-from home.models import Azienda ,Personale #,Cliente,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
+from home.models import Azienda ,Personale,Assegnato_Cantiere,Cantiere #,Cliente,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
 
 import json
 from django.conf import settings
@@ -110,10 +110,19 @@ class PersonaleAziendaCantiere(APIView):
     serializer_class = Personaleserializer
     def get(self,request,azienda_id,cantiere_id):
         object = Personale.objects.filter(azienda_id=azienda_id)
+        cas = Assegnato_Cantiere.objects.filter(cantiere_id=cantiere_id)
+        ret=[]
+        for one in cas:
+            ret.append(one.personale)
+
         #personale = object.azienda_personale.all()
-        pc = personale.cantiere_assegnato.filter(cantiere_id=cantiere_id)
+        #for one in object:
+        #    pas =  Assegnato_Cantiere.objects.filter(personale=one,cantiere_id=cantiere_id)
+
+        ##pas = Assegnato_Cantiere.objects.filter()
+        #pc = object.cantiere_assegnato.filter(cantiere_id=cantiere_id)
         #perscant = personale.filter(azienda=object)
-        serializer = self.serializer_class(pc,many=True)
+        serializer = self.serializer_class(ret,many=True)
         return Response(serializer.data)
 
 

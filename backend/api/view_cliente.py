@@ -23,11 +23,12 @@ class ClienteList(APIView):
     #azienda=Azienda.objects.get(current=True)
     #queryset = Cliente.objects.filter(azienda=azienda)
     serializer_class = Clienteserializer
-    def get(self,request):
-        azienda=Azienda.objects.get(current=True)
-        c = Cliente.objects.filter(azienda=azienda)
-        serializer = self.serializer_class(c,many=True)
-        return Response(serializer.data)
+    def get(self,request,azienda_id):
+        if azienda_id is None:
+            azienda=Azienda.objects.get(current=True)
+            c = Cliente.objects.filter(azienda=azienda)
+            serializer = self.serializer_class(c,many=True)
+            return Response(serializer.data)
 
 class ClienteListAll(generics.ListCreateAPIView):
     #azienda=Azienda.objects.get(current=True)

@@ -91,7 +91,7 @@ class Fornitori(models.Model):
 
 #    clfr = models.CharField(max_length=2, choices=ClienteFornitore.choices,
 #        default=ClienteFornitore.CLIENTE, blank=True, null=True)
-    codcf = models.CharField(max_length=60, blank=True, null=True)
+    codcf = models.CharField(max_length=60, blank=True, null=True,unique=True)
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     indirizzo = models.CharField(max_length=100,blank=True, null=True)
     cap = models.CharField(max_length=20,blank=True, null=True)
@@ -117,6 +117,7 @@ class Fornitori(models.Model):
 
     banca = models.CharField(max_length=40,blank=True, null=True)
     iban = models.CharField(max_length=40,blank=True, null=True)
+    azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_fornitore')
 
     def __str__(self):
         return self.codcf
@@ -127,6 +128,10 @@ class Fornitori(models.Model):
 class Sesso(models.TextChoices):
         MASCHIO='M'
         FEMMINA='F'
+
+
+
+
 
 class Cliente(models.Model):
     class ClienteFornitore(models.TextChoices):
@@ -139,7 +144,7 @@ class Cliente(models.Model):
 
 #    clfr = models.CharField(max_length=2, choices=ClienteFornitore.choices,
 #        default=ClienteFornitore.CLIENTE, blank=True, null=True)
-    codcf = models.CharField(max_length=60, blank=True, null=True)
+    codcf = models.CharField(max_length=60, blank=True, null=True,unique=True)
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     indirizzo = models.CharField(max_length=100,blank=True, null=True)
     cap = models.CharField(max_length=20,blank=True, null=True)
@@ -161,7 +166,8 @@ class Cliente(models.Model):
 
     #banca = models.CharField(max_length=40,blank=True, null=True)
     #iban = models.CharField(max_length=40,blank=True, null=True)
-    
+    #cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_cliente')
+
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_cliente')
 
     def __str__(self):
@@ -192,14 +198,13 @@ class Cantiere(models.Model):
     data_inizio_lavori = models.DateField(blank=True, null=True)
     data_fine_lavori = models.DateField(blank=True, null=True)
     cliente = models.ForeignKey(Cliente,null=True,on_delete=models.CASCADE,related_name='cliente_cantiere')
+    #azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_cantiere')
 
     def __str__(self):
         return self.nome
     class Meta:
         managed = True
         db_table = 'cantiere'
-
-
 
 class Personale(models.Model):
     
@@ -212,7 +217,11 @@ class Personale(models.Model):
     wage_netto = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) 
 
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_personale')
-
+    #prova = models.ManyToManyField(
+    #    Cantiere,
+        #through="Assegnato_Cantiere",
+        #through_fields=("personale", "cantiere"),
+    #)
     def __str__(self):
         return self.cognome
     
@@ -220,6 +229,21 @@ class Personale(models.Model):
         managed = True
         db_table = 'personale'
 
+class Documenti(models.Model):
+        def set_path(self,filename):
+            #an = Album.objects.get(pk=self.album_id)
+            #albumname= re.sub('[^a-zA-Z0-9]+', '', an.nome)
+            return 'foto/'+filename # +albumname +'/'+filename
+        cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_documenti')
+        titolo = models.CharField(max_length=80, blank=True, null=True)
+        media = models.FileField(upload_to=set_path,null=True,blank=True)
+        
+        def __str__(self):
+            return self.titolo
+    
+        class Meta:
+            managed = True
+            db_table = 'documenti'
 
 class Assegnato_Cantiere(models.Model):
         personale = models.ForeignKey(Personale,null=True,on_delete=models.CASCADE,related_name='personale_assegnato')
@@ -239,17 +263,17 @@ class Ordine(models.Model):
         MATERIALE = "MA",_("Materiale")
         MACCHINARI = "NO",_("Noleggio")
 
-
     data_ordine = models.DateField(blank=True, null=True)
-    importo = models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2) #MoneyField(max_digits=14, decimal_places=2, default_currency='EUR',default=0.0)
+    importo = models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2) 
     fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitori_ordine')
     cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_ordine')
     mestesso = models.BooleanField(null=False,default=False)
     magazzino = models.BooleanField(null=False,default=False)
-    tipologia = models.CharField(max_length=2, choices=TipologiaFornitore.choices,
-                    default=TipologiaFornitore.MATERIALE, blank=True, null=True)
+    tipologia = models.CharField(max_length=2, choices=TipologiaFornitore.choices,default=TipologiaFornitore.MATERIALE, blank=True, null=True)
 
-
+    def __str__(self):
+        return "aaa"
+    
     class Meta:
         managed = True
         db_table = 'ordine'
@@ -264,7 +288,9 @@ class Articoli(models.Model):
     importo_totale = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) #MoneyField(max_digits=14, decimal_places=2, default_currency='EUR')
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_articoli')
 
-
+    def __str__(self):
+        return self.descrizione
+    
     class Meta:
         managed = True
         db_table = 'articoli'

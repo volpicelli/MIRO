@@ -8,4 +8,4 @@ class Ordineserializer(serializers.ModelSerializer):
     class Meta:
         model = Ordine
 
-        fields = '__all__'
+        fields ='__all__'

@@ -15,6 +15,7 @@ from home.models import Personale,Assegnato_Cantiere
 
 import json
 from django.conf import settings
+
 class Assegnato_CantiereList(generics.ListCreateAPIView):
     queryset = Assegnato_Cantiere.objects.all()
     serializer_class = Assegnato_CantiereSerializer
@@ -24,6 +25,7 @@ class Assegnato_CantiereList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         personale = request.POST['personale']
         cantiere = request.POST['cantiere']
+        ore_lavorate = request.POST['ore_lavorate']
         p = Personale.objects.get(pk=personale)
         #c = Cantiere.objects.get(pk=cantiere)
         self.cognome  = p.cognome

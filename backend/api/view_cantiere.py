@@ -11,25 +11,38 @@ from rest_framework import exceptions
 from .cantiere_serializer import Cantiereserializer
 from .ordine_serializer import Ordineserializer
 
-from home.models import Cantiere
+from home.models import Cantiere,Azienda,Cliente
 import json
 from django.conf import settings
 
-
-class CantiereList(APIView):
+   
+class CantieriAzienda(APIView):
     serializer_class = Cantiereserializer
 
-    def get(self,request,id_cliente,id_azienda):
-        c = Cantiere.objects.filter(cliente=id_cliente)
-        serializer = self.serializer_class(c,many=True)
+    #def get(self,request,id_cliente,id_azienda):
+    def get(self,request,azienda_id):
+        #azienda=Azienda.objects.get(current=True)
+
+        clienti=Cliente.objects.filter(azienda_id=azienda_id)
+        tutticantieri = []
+        for one in clienti:
+            try:
+                cantiere = Cantiere.objects.filter(cliente=one)
+                for o in cantiere:
+                    tutticantieri.append(o)
+            except ObjectDoesNotExist:
+                pass
+
+
+        serializer = self.serializer_class(tutticantieri,many=True)
         return Response(serializer.data)
-"""
+
 class CantiereList(generics.ListCreateAPIView):
-    azienda=Azienda.objects.get(current=True)
+    #azienda=Azienda.objects.get(current=True)
     queryset = Cantiere.objects.all()
     serializer_class = Cantiereserializer
-"""
-    
+
+
 
 class CantiereDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cantiere.objects.all()

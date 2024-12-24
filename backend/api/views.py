@@ -74,6 +74,30 @@ class LoginView(APIView):
         else:
             return Response({'error': 'Invalid credentials'}, status=401)
 
+class AddOreLavoro(APIView):
+    serializer_class = Assegnato_CantiereSerializer
+
+    def get(self,request,cantiere_id,personale_id,ore):
+
+        #return Response(ore)
+    
+        try:
+            ac = Assegnato_Cantiere.objects.get(cantiere=cantiere_id,personale=personale_id)
+            ac.ore_lavorate = ac.ore_lavorate + ore
+            ac.save()
+
+        except ObjectDoesNotExist:
+            c = Cantiere.objects.get(pk=cantiere_id)
+            p = Personale.objects.get(pk=personale_id)
+
+            ac=Assegnato_Cantiere(cantiere=c,personale=p,ore_lavorate=ore)
+            ac.save()
+        serialzer = self.serializer_class(ac)
+
+        return Response(serialzer.data)
+
+
+
 class ResponsabileCantiere(APIView):
     serializer_class = Personaleserializer
     permission_classes = [IsAuthenticated]
@@ -115,21 +139,19 @@ class CantieriPersonale(APIView):
     def get(self,request,id_personale):
         ret=[]
         try:
-            p = Personale.objects.get(id=id_personale)
+            p = Personale.objects.get(pk=id_personale)
             
         except ObjectDoesNotExist:
             ret.append({'Error': "Personale {} non esiste".format(id_personale)})
             return Response(ret)
         
-        c = p.personale_assegnato.all()
+        pac = p.personale_assegnato.all()
+        
+        for one in pac:
+            c = one.cantiere
+            s = self.serializer_class(c)
+            ret.append(s.data)
 
-        for one in c:
-            p={}
-            p ={ "id": one.cantiere.id,
-                 "nome": one.cantiere.nome,
-                 "descrizione": one.cantiere.descrizione
-            }
-            ret.append(p)
         return Response(ret)
 
 class PersonaleSuCantiere(APIView):
@@ -157,6 +179,8 @@ class PersonaleSuCantiere(APIView):
                 "wage_netto": one.personale.wage_netto,
                 "tipologia_lavoro_id" : one.personale.tipologia_lavoro_id,
                 "tipologia_lavoro": TipologiaLavori.objects.values('descrizione').get(pk=one.personale.tipologia_lavoro_id)['descrizione'],
+                "ore_lavorate": one.ore_lavorate,
+                "responsabile" : one.responsabile,
                 "cantiere": one.cantiere_id
                 }
             ret.append(o)
@@ -174,12 +198,17 @@ class PersonaleSuCantiere(APIView):
 
 
 
-
+class FattureOrdine(APIView):
+    serializer_class = Fattureserializer
+    def get(self,request,ordine_id):
+        fatture = Fatture.objects.filter(ordine_id=ordine_id)
+        serializer = self.serializer_class(fatture,many=True)
+        return Response(serializer.data)
  
 class FattureList(generics.ListCreateAPIView):
     queryset = Fatture.objects.all()
     serializer_class = Fattureserializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     
 
@@ -203,7 +232,7 @@ class FattureDetail(generics.RetrieveUpdateDestroyAPIView):
 class FornitoriList(generics.ListCreateAPIView):
     queryset = Fornitori.objects.all()
     serializer_class = Fornitoriserializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
 
 class FornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -221,11 +250,11 @@ class FornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
 
         object = Fornitori.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
-        user = request.user.last_name
-        ss={}
-        ss['q']=serializer.data
-        ss['user']=user
-        return Response(ss)#erializer.data)
+        #user = request.user.last_name
+        ##ss={}
+        #ss['q']=serializer.data
+        #ss['user']=user
+        return Response(serializer.data)
 
 
 class OrdineGetTipologia(APIView):
