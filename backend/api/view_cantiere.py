@@ -10,8 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import exceptions
 from .cantiere_serializer import Cantiereserializer
 from .ordine_serializer import Ordineserializer
-
-from home.models import Cantiere,Azienda,Cliente
+from .fatture_serializer import Fattureserializer
+from home.models import Cantiere,Azienda,Cliente,Fatture
 import json
 from django.conf import settings
 
@@ -69,3 +69,25 @@ class OrdiniCantiere(APIView):
         serializer = self.serializer_class(o,many=True)
 
         return Response(serializer.data)
+    
+
+class FattureCantiere(APIView):
+    serializer_class = Fattureserializer
+
+    def get(self,request,id_cantiere):
+        c = Cantiere.objects.get(pk=id_cantiere)
+        ordini = c.cantiere_ordine.all()
+        resp=[]
+        for ordine in ordini:
+
+            fatture = ordine.ordine_fatture.all()
+            #for fattura in fatture:
+            if fatture:
+                serializer = self.serializer_class(fatture,many=True)
+                #serializer.data['cantiere'] = id_cantiere
+                #serializer.data['ordine'] = ordine.id
+                altro = {'fattura':serializer.data, 'cantiere': id_cantiere,'ordine': ordine.id}
+                
+                resp.append(altro)
+
+        return Response(resp)

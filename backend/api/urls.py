@@ -119,6 +119,7 @@ urlpatterns = [
         #path('ordine/<int:ordine_id>/articoli',ArticoliOrdine.as_view()),
         
         path('ordini/cantiere/<int:id_cantiere>',OrdiniCantiere.as_view()),
+        path('fatture/cantiere/<int:id_cantiere>',FattureCantiere.as_view()),
 
 
         

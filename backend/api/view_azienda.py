@@ -11,7 +11,7 @@ from rest_framework import exceptions
 from .azienda_serializer import Aziendaserializer
 from .cliente_seriallizer import Clienteserializer
 #from .fornitori_serializer import Fornitoriserializer
-#from .ordine_serializer import Ordineserializer
+from .ordine_serializer import Ordineserializer
 #from .tipologialavori_serializer import TipologiaLavoriSerializer
 from .personale_serializer import Personaleserializer
 #from .responsabile_serializer import Responsabileserialize
@@ -95,6 +95,8 @@ class CantieriAzienda(APIView):
             resp.append(serializer_cantieri.data)
         
         return Response(resp)
+
+
 
 class PersonaleAzienda(APIView):
     serializer_class = Personaleserializer
