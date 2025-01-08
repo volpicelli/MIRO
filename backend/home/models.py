@@ -35,9 +35,12 @@ class Azienda(models.Model):
         db_table = 'azienda'
 
 class UsersAzienda(models.Model):
-        user = models.ForeignKey(User,null=True,on_delete=models.CASCADE,related_name='userazienda')
-        azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='aziendauser')
+    user = models.ForeignKey(User,null=True,on_delete=models.CASCADE,related_name='userazienda')
+    azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='aziendauser')
 
+    class Meta:
+        managed = True
+        db_table = 'usersazienda'
     
 
 class TipologiaLavori(models.Model):
