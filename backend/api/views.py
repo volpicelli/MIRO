@@ -100,7 +100,7 @@ class AddOreLavoro(APIView):
 
 class ResponsabileCantiere(APIView):
     serializer_class = Personaleserializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
 
     def get(self,request,id_cantiere):
@@ -368,7 +368,7 @@ class OrdineCreate(APIView):
 
 
 class OrdineDaMagazzino(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(sef,request):
         m = Magazzino.objects.all()
