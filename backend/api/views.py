@@ -32,7 +32,6 @@ from home.models import Cantiere,Articoli,Fatture,Fornitori,Ordine,Personale,Tip
 
 import json
 from django.db.models import Sum
-
 from django.conf import settings
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.views import ObtainAuthToken

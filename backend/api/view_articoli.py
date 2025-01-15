@@ -18,7 +18,6 @@ class ArticoliList(generics.ListCreateAPIView):
     queryset = Articoli.objects.all()
     serializer_class = Articoliserializer
 
-
 class ArticoliDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Articoli.objects.all()
     serializer_class = Articoliserializer
