@@ -93,8 +93,8 @@ urlpatterns = [
         path('azienda/update/<int:pk>',AziendaDetail.as_view()),
 
         path('cliente/getpersoc', ClientePersoc.as_view()),
-        path('cliente/listall', ClienteListAll.as_view()),
-        path('cliente/list', ClienteList.as_view()),
+        #path('cliente/listall', ClienteListAll.as_view()),
+        path('cliente/list', ClienteListAll.as_view()),
 
         path('cliente/create',ClienteList.as_view()),
         path('cliente/detail/<int:pk>',ClienteDetail.as_view()),
