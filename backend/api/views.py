@@ -31,6 +31,8 @@ from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 from home.models import Cantiere,Articoli,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
 
 import json
+from django.db.models import Sum
+
 from django.conf import settings
 from django.contrib.auth import authenticate
 
@@ -49,14 +51,19 @@ class CustomAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         all = user.userazienda.all()
-        az= []
+        azn= []
+        azid = []
         for one in all:
-            az.append( one.azienda.id )
+            azn.append( one.azienda.nome )
+            azid.append( one.azienda.id)
+            request.session['azienda']=one.azienda.id
         token, created = Token.objects.get_or_create(user=user)
+
         return Response({
             'token': token.key,
             'user_id': user.pk,
-            'azienda': az,
+            'azienda_name': azn,
+            'azienda_id' : azid,
             'email': user.email
         })
 
@@ -497,6 +504,20 @@ class ResponsabileCantiere(APIView):
         return Response(serializer.data)   
 
 """
+
+class GroupMagazzino(APIView):
+    def get(self,request):
+        articolimag = Magazzino.objects.values('descrizione').annotate(totale=Sum('importo_totale'),quantita=Sum('quantita'))
+        res=[]
+        for one in articolimag:
+            a={}
+            a['descrizione']=one['descrizione']
+            a['totale'] = one['totale']
+            a['quantita'] = one['quantita']
+            res.append(a)
+
+        return Response(res  )
+
 class MagazzinoList(generics.ListCreateAPIView):
     queryset = Magazzino.objects.all()
     serializer_class = Magazzinoserializer

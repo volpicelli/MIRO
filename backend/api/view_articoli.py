@@ -13,6 +13,7 @@ from .articoli_serializer import Articoliserializer
 from home.models import Articoli,Ordine
 
 import json
+from django.db.models import Sum
 from django.conf import settings
 class ArticoliList(generics.ListCreateAPIView):
     queryset = Articoli.objects.all()
@@ -44,3 +45,16 @@ class ArticoliOrdine(APIView):
         serializer = self.serializer_class(a,many=True)
         return Response(serializer.data)
 
+
+class GroupArticoli(APIView):
+    def get(self,request):
+        articoli = Articoli.objects.values('descrizione').annotate(totale=Sum('importo_totale'),quantita=Sum('quantita'))
+        res=[]
+        for one in articoli:
+            a={}
+            a['descrizione']=one['descrizione']
+            a['totale'] = one['totale']
+            a['quantita'] = one['quantita']
+            res.append(a)
+
+        return Response(res  )
