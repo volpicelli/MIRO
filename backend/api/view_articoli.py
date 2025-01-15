@@ -11,7 +11,6 @@ from rest_framework import exceptions
 
 from .articoli_serializer import Articoliserializer
 from home.models import Articoli,Ordine
-
 import json
 from django.db.models import Sum
 from django.conf import settings

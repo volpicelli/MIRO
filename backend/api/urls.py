@@ -57,6 +57,7 @@ urlpatterns = [
         path('personale/delete/<int:pk>', PersonaleDetail.as_view()),
         path('personale/update/<int:pk>', PersonaleDetail.as_view()),
 
+
         path('groupmagazzino', GroupMagazzino.as_view()),
 
         path('magazzino/list', MagazzinoList.as_view()),
