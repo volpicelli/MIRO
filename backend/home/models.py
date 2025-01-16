@@ -290,6 +290,7 @@ class Articoli(models.Model):
     prezzo_unitario = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2)
     importo_totale = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) #MoneyField(max_digits=14, decimal_places=2, default_currency='EUR')
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_articoli')
+    magazzino = models.BooleanField(null=False,default=False)
 
     def __str__(self):
         return self.descrizione
