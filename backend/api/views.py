@@ -526,9 +526,9 @@ class MagazzinoDetail(generics.RetrieveUpdateDestroyAPIView):
     
     def destroy(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
-        object = Ordine.objects.get(pk=pk) #.delete() #kwargs['pk'])
-        object.magazzino = False
-        serializer = self.serializer_class(object)
+        object = Magazzino.objects.get(pk=pk).delete() #kwargs['pk'])
+        #object.magazzino = False
+        #serializer = self.serializer_class(object)
         return Response({'Msg':'OK '+str(pk) +' Non piu in magazzino'})
 
     def retrieve(self, request, pk,*args, **kwargs):
