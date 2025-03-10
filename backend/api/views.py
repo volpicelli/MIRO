@@ -470,38 +470,6 @@ class PersonaleDetail(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.serializer_class(object)
         return Response(serializer.data)
 
-"""
-class ResponsabileList(generics.ListCreateAPIView):
-    queryset = Responsabile.objects.all()
-    serializer_class = Responsabileserializer
-
-
-class ResponsabileDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Responsabile.objects.all()
-    serializer_class = Responsabileserializer
-    
-    def destroy(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Responsabile.objects.get(pk=pk).delete() #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response({'Msg':'OK '+str(pk) +' deleted'})
-
-    def retrieve(self, request, pk,*args, **kwargs):
-        #pk = self.kwargs.get('pk')
-        object = Responsabile.objects.get(pk=pk) #kwargs['pk'])
-        serializer = self.serializer_class(object)
-        return Response(serializer.data)
-
-class ResponsabileCantiere(APIView):
-    serializer_class = Responsabileserializer
-
-    def get(self,request,id_cantiere):
-        c = Cantiere.objects.get(pk=id_cantiere)
-        r = c.responsabile
-        serializer = self.serializer_class(r)
-        return Response(serializer.data)   
-
-"""
 
 class GroupMagazzino(APIView):
     def get(self,request):
