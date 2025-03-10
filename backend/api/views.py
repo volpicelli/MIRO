@@ -488,6 +488,18 @@ class MagazzinoList(generics.ListCreateAPIView):
     queryset = Magazzino.objects.all()
     serializer_class = Magazzinoserializer
 
+class MagazzinoDelete(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Magazzino.objects.all()
+    serializer_class = Magazzinoserializer
+     
+    def destroy(self, request, pk,*args, **kwargs):
+        #pk = self.kwargs.get('pk')
+        object = Magazzino.objects.get(pk=pk).delete() #kwargs['pk'])
+        #object.magazzino = False
+        #serializer = self.serializer_class(object)
+        return Response({'Msg':'OK '+str(pk) +' Non piu in magazzino'})
+
+    
 class MagazzinoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Magazzino.objects.all()
     serializer_class = Magazzinoserializer
@@ -504,7 +516,7 @@ class MagazzinoDetail(generics.RetrieveUpdateDestroyAPIView):
         object = Magazzino.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
         return Response(serializer.data)
-    
+        
 
 class MagazzinoArticoli(APIView):
     """
