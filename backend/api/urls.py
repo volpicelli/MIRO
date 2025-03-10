@@ -10,7 +10,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from api.views import   ResponsabileCantiere,AddOreLavoro,FattureOrdine,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
-                        PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoArticoli,CantieriPersonale,\
+                        PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoDelete,MagazzinoArticoli,CantieriPersonale,\
                         OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken
                 
                         #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
@@ -64,7 +64,7 @@ urlpatterns = [
         path('magazzino/list', MagazzinoList.as_view()),
         path('magazzino/create', MagazzinoList.as_view()),
         path('magazzino/detail/<int:pk>', MagazzinoDetail.as_view()),
-        path('magazzino/delete/<int:pk>', MagazzinoDetail.as_view()),
+        path('magazzino/delete/<int:pk>', MagazzinoDelete.as_view()),
         path('magazzino/update/<int:pk>', MagazzinoDetail.as_view()),
         path('magazzino/articoli', MagazzinoArticoli.as_view()),
 
