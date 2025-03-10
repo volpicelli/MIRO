@@ -501,7 +501,7 @@ class MagazzinoDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def retrieve(self, request, pk,*args, **kwargs):
         #pk = self.kwargs.get('pk')
-        object = Ordine.objects.get(pk=pk) #kwargs['pk'])
+        object = Magazzino.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
         return Response(serializer.data)
     
