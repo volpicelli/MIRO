@@ -294,8 +294,6 @@ class OrdineCreate(APIView):
         #except ObjectDoesNotExist:
         #    error_msg=" Tipologia non esiste"
         #    return Response(error_msg)#,safe=False)
-
-
         o = Ordine( cantiere=c,
                     fornitore=f,
                     data_ordine=data['data_ordine'],
