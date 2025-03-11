@@ -289,11 +289,11 @@ class OrdineCreate(APIView):
             error_msg=" Cantiere non esiste"
             return Response(error_msg)#,safe=False)
 
-        try:
-            t  = TipologiaLavori.objects.get(pk=data['tipologia'])
-        except ObjectDoesNotExist:
-            error_msg=" Tipologia non esiste"
-            return Response(error_msg)#,safe=False)
+        #try:
+        #    t  = TipologiaLavori.objects.get(pk=data['tipologia'])
+        #except ObjectDoesNotExist:
+        #    error_msg=" Tipologia non esiste"
+        #    return Response(error_msg)#,safe=False)
 
 
         o = Ordine( cantiere=c,
@@ -302,7 +302,7 @@ class OrdineCreate(APIView):
                     #importo=data['importo'],
                     #magazzino=data['magazzino'],
                     #mestesso=data['mestesso'],
-                    tipologia= t.id #data['tipologia']
+                    tipologia= data['tipologia'] #t.id #data['tipologia']
                     )
         o.save()
 
@@ -606,7 +606,7 @@ class GroupMagazzino(APIView):
         for one in articolimag:
             a={}
             a['descrizione']=one['descrizione']
-            a['totale'] = one['totale']
+            a['importo_totale'] = one['totale']
             a['quantita'] = one['quantita']
             res.append(a)
 
