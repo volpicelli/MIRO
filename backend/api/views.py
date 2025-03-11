@@ -303,7 +303,7 @@ class OrdineCreate(APIView):
                     tipologia= data['tipologia'] #t.id #data['tipologia']
                     )
         o.save()
-
+        importo = 0.0
         for one in data['articoli']:
             a = Articoli()
             a.ordine=o
@@ -311,7 +311,11 @@ class OrdineCreate(APIView):
             a.quantita = one['quantita']
             a.prezzo_unitario = one['prezzo_unitario']
             a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
+            importo += a.importo_totale
             a.save()
+        o.importo = importo
+        o.save()
+        
         os = Ordineserializer(o)
         return Response(os.data)#,safe=False)
 
