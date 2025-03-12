@@ -269,26 +269,63 @@ class OrdineGetTipologia(APIView):
 
 
 class OrdineCreate(APIView):
+    """
+    json={'fornitore':2,
+        'cantiere':16,
+        'tipologia':'NO',
+        'data_ordine':'2026-5-23',
+        'damagazzino': false,
+        'permagazzino': false,
+        'articoli':[{'id':1,'descrizione': 'mattoni 40x40','quantita': 230,'prezzo_unitario':0.34,'preleva':12},
+                    {'id': 2,'descrizione': ' seconda ','quantita': 12,'prezzo_unitario': 12.4,'preleva':4}
+                    ]}
+
+    """
     def post(self,request):
         data = json.loads(request.body)
         #return Response(data)
+        # If data['permagazzino'] == True
+        # Ordine da fornitore esterno per riempire il magazzino
 
-        # Ordine con Fornitore e Cantiere 
-        # mestesso=false magazzino = false
+        # if data['damagazzino'] == True
+        # ordine per un cantiere con materiale preso dal Magazzino
+
+        # data['permagazzino'] == False e data['damagazzino'] == False
+        # Ordine normale da fornitore per un cantiere
+
         # Tipologia qualsiasi
         #if data['magazzino'] is not True and data['mestesso'] is not True:
-        try:
-            f = Fornitori.objects.get(pk=data['fornitore'])
-        except ObjectDoesNotExist:
-            error_msg=" Fornitore non esiste"
-            return Response(error_msg)#,safe=False)
+        damagazzino = False
+        if 'damagazzino' not in data or data['damagazzino'] == False:
+        
+            try:
+                f = Fornitori.objects.get(pk=data['fornitore'])
+            except ObjectDoesNotExist:
+                error_msg=" Fornitore non esiste"
+                return Response(error_msg)#,safe=False)
+        else:
+            damagazzino = True
+            try:
+                f = Fornitori.objects.get(pk=data['fornitore'])
+            except ObjectDoesNotExist:
+                error_msg=" Fornitore non esiste"
+                return Response(error_msg)
 
-        try:
-            c  = Cantiere.objects.get(pk=data['cantiere'])
-        except ObjectDoesNotExist:
-            error_msg=" Cantiere non esiste"
-            return Response(error_msg)#,safe=False)
+        permagazzino = False
+        if 'permagazzino' not in data or data['permagazzino']== False:
 
+            try:
+                c  = Cantiere.objects.get(pk=data['cantiere'])
+            except ObjectDoesNotExist:
+                error_msg=" Cantiere non esiste"
+                return Response(error_msg)#,safe=False)
+        else:
+            c=None
+            permagazzino=True
+        #if 'damagazzino' in data or data['damagazzino']== True:
+
+# Ordine.TipologiaFornitore.choices
+# [('SE', 'Servizio'), ('MA', 'Materiale'), ('NO', 'Noleggio')]
         #try:
         #    t  = TipologiaLavori.objects.get(pk=data['tipologia'])
         #except ObjectDoesNotExist:
@@ -298,24 +335,84 @@ class OrdineCreate(APIView):
                     fornitore=f,
                     data_ordine=data['data_ordine'],
                     #importo=data['importo'],
-                    #magazzino=data['magazzino'],
-                    #mestesso=data['mestesso'],
+                    permagazzino=permagazzino,
+                    damagazzino= damagazzino, #data['mestesso'],
                     tipologia= data['tipologia'] #t.id #data['tipologia']
                     )
         o.save()
         importo = 0.0
-        for one in data['articoli']:
-            a = Articoli()
-            a.ordine=o
-            a.descrizione=one['descrizione']
-            a.quantita = one['quantita']
-            a.prezzo_unitario = one['prezzo_unitario']
-            a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
-            importo += a.importo_totale
-            a.save()
-        o.importo = importo
-        o.save()
-        
+        # Preleva materiale dal Magazzino
+        if damagazzino: # not in data or data['damagazzino'] == False:
+            for one in data['articoli']:
+                a = Articoli()
+                a.ordine=o
+                a.descrizione=one['descrizione']
+                a.quantita = one['preleva']
+                a.prezzo_unitario = one['prezzo_unitario']
+                a.importo_totale = int(one['preleva']) * float(one['prezzo_unitario'])
+                importo += a.importo_totale
+                a.save()
+                m = Magazzino.objects.get(pk=one['id'])
+                m.quantita = m.quantita - a.quantita
+                m.save()
+            o.importo = importo
+            o.save()
+
+        else: 
+            for one in data['articoli']:
+                a = Articoli()
+                a.ordine=o
+                a.descrizione=one['descrizione']
+                a.quantita = one['quantita']
+                a.prezzo_unitario = one['prezzo_unitario']
+                a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
+                importo += a.importo_totale
+                a.save()
+            o.importo = importo
+            o.save()
+
+        # Ordina  materiale per il  Magazzino
+        if permagazzino: 
+            for one in data['articoli']:
+                a = Articoli()
+                a.ordine=o
+                a.descrizione=one['descrizione']
+                a.quantita = one['quantita']
+                a.prezzo_unitario = one['prezzo_unitario']
+                a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
+                importo += a.importo_totale
+                a.save()
+                try:
+                    m = Magazzino.objects.get(descrizione=one['descrizione'])
+                    #if m.exists():
+                    m.quantita = m.quantita+a.quantita
+                    m.prezzo_unitario = (m.prezzo_unitario + a.prezzo_unitario)/2
+                    m.save()
+                except:
+                    m = Magazzino()
+                    m.descrizione = a.descrizione
+                    m.quantita = a.quantita
+                    m.prezzo_unitario = a.prezzo_unitario
+                    m.importo_totale = a.importo_totale
+                    m.ordine=o
+                    m.azienda=f.azienda
+                    m.save()
+            o.importo = importo
+            o.save()
+
+        else: 
+            for one in data['articoli']:
+                a = Articoli()
+                a.ordine=o
+                a.descrizione=one['descrizione']
+                a.quantita = one['quantita']
+                a.prezzo_unitario = one['prezzo_unitario']
+                a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
+                importo += a.importo_totale
+                a.save()
+            o.importo = importo
+            o.save()
+
         os = Ordineserializer(o)
         return Response(os.data)#,safe=False)
 

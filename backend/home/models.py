@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 class Azienda(models.Model):
     nome = models.CharField(max_length=60, blank=True, null=True)
+    codcf = models.CharField(max_length=60, blank=True, null=True,unique=True)
     current = models.BooleanField(null=True,default=False)
     descrizione = models.TextField(blank=True, null=True)
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
@@ -197,7 +198,7 @@ class Cantiere(models.Model):
     descrizione = models.TextField(blank=True, null=True)
     ubicazione = models.CharField(max_length=100, blank=True, null=True)
     status = models.BooleanField(null=True)
-    valore_commessa =  models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2) #MoneyField(max_digits=14, decimal_places=2, default_currency='EUR')
+    valore_commessa =  models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
     data_inizio_lavori = models.DateField(blank=True, null=True)
     data_fine_lavori = models.DateField(blank=True, null=True)
     cliente = models.ForeignKey(Cliente,null=True,on_delete=models.CASCADE,related_name='cliente_cantiere')
@@ -216,8 +217,8 @@ class Personale(models.Model):
     tipologia_lavoro = models.ForeignKey(TipologiaLavori,null=True,on_delete=models.CASCADE,related_name='tipolavoro_personale')
     responsabile = models.BooleanField(null=False,default=False)
     
-    wage_lordo = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) 
-    wage_netto = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) 
+    wage_lordo = models.FloatField(blank=True,null=True) 
+    wage_netto = models.FloatField(blank=True,null=True) 
 
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_personale')
     #prova = models.ManyToManyField(
@@ -252,7 +253,7 @@ class Assegnato_Cantiere(models.Model):
         personale = models.ForeignKey(Personale,null=True,on_delete=models.CASCADE,related_name='personale_assegnato')
         cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_assegnato')
         responsabile = models.BooleanField(null=False,default=False)
-        ore_lavorate =  models.DecimalField(max_digits=5,blank=True,null=True,decimal_places=2) 
+        ore_lavorate =  models.FloatField(blank=True,null=True) 
 
         class Meta:
             unique_together = ('personale', 'cantiere')
@@ -267,11 +268,11 @@ class Ordine(models.Model):
         MACCHINARI = "NO",_("Noleggio")
 
     data_ordine = models.DateField(blank=True, null=True)
-    importo = models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2) 
+    importo = models.FloatField(blank=True,null=True) 
     fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitori_ordine')
     cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_ordine')
-    mestesso = models.BooleanField(null=False,default=False)
-    magazzino = models.BooleanField(null=False,default=False)
+    damagazzino = models.BooleanField(null=False,default=False)
+    permagazzino = models.BooleanField(null=False,default=False)
     tipologia = models.CharField(max_length=2, choices=TipologiaFornitore.choices,default=TipologiaFornitore.MATERIALE, blank=True, null=True)
 
     def __str__(self):
@@ -287,10 +288,10 @@ class Ordine(models.Model):
 class Articoli(models.Model):
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
-    prezzo_unitario = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2)
-    importo_totale = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) #MoneyField(max_digits=14, decimal_places=2, default_currency='EUR')
+    prezzo_unitario = models.FloatField(blank=True,null=True)
+    importo_totale = models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_articoli')
-    magazzino = models.BooleanField(null=False,default=False)
+    #magazzino = models.BooleanField(null=False,default=False)
 
     def __str__(self):
         return self.descrizione
@@ -303,9 +304,10 @@ class Magazzino(models.Model):
     quantita = models.IntegerField(blank=True, null=True)
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
-    prezzo_unitario = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2)
-    importo_totale = models.DecimalField(max_digits=19,blank=True,null=True,decimal_places=2) 
+    prezzo_unitario = models.FloatField(blank=True,null=True)
+    importo_totale = models.FloatField(blank=True,null=True) 
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
+    azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_magazzino')
 
     class Meta:
         managed = True
@@ -316,8 +318,8 @@ class Fatture(models.Model):
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     n_fattura = models.CharField(db_column='n.fattura', max_length=40, blank=True, null=True)  # Field renamed to remove unsuitable characters.
     data_fattura = models.DateField(blank=True, null=True)
-    importo =  models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#MoneyField(max_digits=14, decimal_places=2, default_currency='EUR')
-    pagato =  models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#MoneyField(max_digits=14, decimal_places=2, default_currency='EUR')
+    importo =  models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
+    pagato =  models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
     data_scadenza = models.DateField(blank=True, null=True)
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_fatture')
 
