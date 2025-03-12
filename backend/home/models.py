@@ -288,8 +288,8 @@ class Ordine(models.Model):
 class Articoli(models.Model):
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
-    prezzo_unitario = models.FloatField(blank=True,null=True)
-    importo_totale = models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
+    prezzo_unitario = models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True)
+    importo_totale =models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)# models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_articoli')
     #magazzino = models.BooleanField(null=False,default=False)
 
@@ -304,8 +304,8 @@ class Magazzino(models.Model):
     quantita = models.IntegerField(blank=True, null=True)
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
-    prezzo_unitario = models.FloatField(blank=True,null=True)
-    importo_totale = models.FloatField(blank=True,null=True) 
+    prezzo_unitario = models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True)
+    importo_totale = models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True) 
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_magazzino')
 
