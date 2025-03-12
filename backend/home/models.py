@@ -198,7 +198,7 @@ class Cantiere(models.Model):
     descrizione = models.TextField(blank=True, null=True)
     ubicazione = models.CharField(max_length=100, blank=True, null=True)
     status = models.BooleanField(null=True)
-    valore_commessa =  models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
+    valore_commessa =   models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
     data_inizio_lavori = models.DateField(blank=True, null=True)
     data_fine_lavori = models.DateField(blank=True, null=True)
     cliente = models.ForeignKey(Cliente,null=True,on_delete=models.CASCADE,related_name='cliente_cantiere')
@@ -217,8 +217,8 @@ class Personale(models.Model):
     tipologia_lavoro = models.ForeignKey(TipologiaLavori,null=True,on_delete=models.CASCADE,related_name='tipolavoro_personale')
     responsabile = models.BooleanField(null=False,default=False)
     
-    wage_lordo = models.FloatField(blank=True,null=True) 
-    wage_netto = models.FloatField(blank=True,null=True) 
+    wage_lordo =  models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True) 
+    wage_netto =  models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True) 
 
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_personale')
     #prova = models.ManyToManyField(
@@ -289,7 +289,7 @@ class Articoli(models.Model):
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
 
-    prezzo_unitario = models.FloatField(blank=True,null=True)
+    prezzo_unitario =  models.FloatField(blank=True,null=True)
     importo_totale = models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_articoli')
     #magazzino = models.BooleanField(null=False,default=False)
@@ -319,8 +319,8 @@ class Fatture(models.Model):
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     n_fattura = models.CharField(db_column='n.fattura', max_length=40, blank=True, null=True)  # Field renamed to remove unsuitable characters.
     data_fattura = models.DateField(blank=True, null=True)
-    importo =  models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
-    pagato =  models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
+    importo =   models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
+    pagato =   models.DecimalField(max_digits=14,blank=True,null=True,decimal_places=2)#models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
     data_scadenza = models.DateField(blank=True, null=True)
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_fatture')
 
