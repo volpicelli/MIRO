@@ -16,6 +16,7 @@ from .ordine_serializer import Ordineserializer
 from .personale_serializer import Personaleserializer
 #from .responsabile_serializer import Responsabileserialize
 from .cantiere_serializer import Cantiereserializer
+from .magazzino_serializer import Magazzinoserializer
 #from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 
 #from .lavorieffettuatifornitori_serializer import LavoriEffettuatiFornitoriserializer
@@ -107,6 +108,14 @@ class PersonaleAzienda(APIView):
         serializer = self.serializer_class(perscant,many=True)
         return Response(serializer.data)
 
+class MagazzinoAzienda(APIView):
+    serializer_class = Magazzinoserializer
+    def get(self,request,azienda_id):
+        object = Azienda.objects.get(pk=azienda_id)
+        magazzino = object.azienda_magazzino.all()
+        magaz = magazzino.filter(azienda=object)
+        serializer = self.serializer_class(magaz,many=True)
+        return Response(serializer.data)
 
 class PersonaleAziendaCantiere(APIView):
     serializer_class = Personaleserializer
