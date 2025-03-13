@@ -17,6 +17,8 @@ from .personale_serializer import Personaleserializer
 #from .responsabile_serializer import Responsabileserialize
 from .cantiere_serializer import Cantiereserializer
 from .magazzino_serializer import Magazzinoserializer
+from .fornitori_serializer import Fornitoriserializer
+from .fatture_serializer import Fattureserializer
 #from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 
 #from .lavorieffettuatifornitori_serializer import LavoriEffettuatiFornitoriserializer
@@ -82,6 +84,19 @@ class ClientiAzienda(APIView):
         serializer = self.serializer_class(c,many=True)
         return Response(serializer.data)
 
+class FornitoriAzienda(APIView):
+    serializer_class = Fornitoriserializer
+    def get( self,request,azienda_id):
+        try:
+            object = Azienda.objects.get(pk=azienda_id)
+        except:
+            msg = " Azienda non esiste " 
+            return Response(msg)
+        
+        c = object.azienda_fornitore.all()
+        serializer = self.serializer_class(c,many=True)
+        return Response(serializer.data)
+    
 class CantieriAzienda(APIView):
     serializer_class = Clienteserializer
     def get(self,request,azienda_id):
@@ -117,6 +132,50 @@ class MagazzinoAzienda(APIView):
         serializer = self.serializer_class(magaz,many=True)
         return Response(serializer.data)
 
+class OrdiniAzienda(APIView):
+    serializer_class = Ordineserializer
+    def get(self,request,azienda_id):
+        try:
+            object = Azienda.objects.get(pk=azienda_id)
+        except:
+            msg=" Azienda non esiste "
+            return Response(msg)
+        clienti = object.azienda_cliente.all()
+        resp = []
+        for one in clienti:
+            cantieri = one.cliente_cantiere.all()
+            for cantiere in cantieri:
+                ordini = cantiere.cantiere_ordine.all()
+                serializer = self.serializer_class(ordini,many=True)
+                for a in serializer.data:
+                    a['azienda'] = object.id
+                resp.append(serializer.data)
+        return Response(resp)
+
+class FattureAzienda(APIView):
+    serializer_class = Fattureserializer
+    def get(self,request,azienda_id):
+        try:
+            object = Azienda.objects.get(pk=azienda_id)
+        except:
+            msg=" Azienda non esiste "
+            return Response(msg)
+        clienti = object.azienda_cliente.all()
+        resp = []
+        for one in clienti:
+            cantieri = one.cliente_cantiere.all()
+            for cantiere in cantieri:
+                ordini = cantiere.cantiere_ordine.all()
+                for ordine in ordini:
+                    fattura = ordine.ordine_fatture.all()
+                    
+                    if fattura:
+                        serializer = self.serializer_class(fattura[0])
+                    #for a in serializer.data:
+                        serializer.data['azienda'] = object.id
+                        resp.append(serializer.data)
+        return Response(resp)
+    
 class PersonaleAziendaCantiere(APIView):
     serializer_class = Personaleserializer
     def get(self,request,azienda_id,cantiere_id):

@@ -317,7 +317,7 @@ class Magazzino(models.Model):
 
 class Fatture(models.Model):
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
-    n_fattura = models.CharField(db_column='n.fattura', max_length=40, blank=True, null=True)  # Field renamed to remove unsuitable characters.
+    n_fattura = models.CharField(db_column='n_fattura', max_length=40, blank=True, null=True)  # Field renamed to remove unsuitable characters.
     data_fattura = models.DateField(blank=True, null=True)
     importo =  models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
     pagato =   models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
