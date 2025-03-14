@@ -357,22 +357,22 @@ class OrdineCreate(APIView):
                 m.save()
             o.importo = importo
             o.save()
-
-        else: 
-            for one in data['articoli']:
-                a = Articoli()
-                a.ordine=o
-                a.descrizione=one['descrizione']
-                a.quantita = one['quantita']
-                a.prezzo_unitario = one['prezzo_unitario']
-                a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
-                importo += a.importo_totale
-                a.save()
-            o.importo = importo
-            o.save()
-
-        # Ordina  materiale per il  Magazzino
-        if permagazzino: 
+            """
+            else: 
+                for one in data['articoli']:
+                    a = Articoli()
+                    a.ordine=o
+                    a.descrizione=one['descrizione']
+                    a.quantita = one['quantita']
+                    a.prezzo_unitario = one['prezzo_unitario']
+                    a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
+                    importo += a.importo_totale
+                    a.save()
+                o.importo = importo
+                o.save()
+                """
+            # Ordina  materiale per il  Magazzino
+        elif permagazzino: 
             for one in data['articoli']:
                 a = Articoli()
                 a.ordine=o
@@ -399,7 +399,7 @@ class OrdineCreate(APIView):
                     m.save()
             o.importo = importo
             o.save()
-
+        
         else: 
             for one in data['articoli']:
                 a = Articoli()
@@ -412,7 +412,8 @@ class OrdineCreate(APIView):
                 a.save()
             o.importo = importo
             o.save()
-
+        
+        
         os = Ordineserializer(o)
         return Response(os.data)#,safe=False)
 
