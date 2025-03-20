@@ -337,7 +337,8 @@ class OrdineCreate(APIView):
                     #importo=data['importo'],
                     permagazzino=permagazzino,
                     damagazzino= damagazzino, #data['mestesso'],
-                    tipologia= data['tipologia'] #t.id #data['tipologia']
+                    tipologia= data['tipologia'], #t.id #data['tipologia']
+                    azienda=f.azienda
                     )
         o.save()
         importo = 0.0
