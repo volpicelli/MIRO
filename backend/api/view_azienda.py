@@ -26,7 +26,7 @@ from .fatture_serializer import Fattureserializer
 #from .tipologiapersonale_serializer import TipologiaPersonaleserializer
 #from moneyed import Money
 # Create your views here.
-from home.models import Azienda ,Personale,Assegnato_Cantiere,Cantiere #,Cliente,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
+from home.models import Azienda ,Personale,Assegnato_Cantiere,Cantiere,Ordine #,Cliente,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
 
 import json
 from django.conf import settings
@@ -135,22 +135,28 @@ class MagazzinoAzienda(APIView):
 class OrdiniAzienda(APIView):
     serializer_class = Ordineserializer
     def get(self,request,azienda_id):
+        resp = []
         try:
-            object = Azienda.objects.get(pk=azienda_id)
+            a = Azienda.objects.get(pk=azienda_id)
+            object = Ordine.objects.filter(azienda=azienda_id)
         except:
             msg=" Azienda non esiste "
             return Response(msg)
-        clienti = object.azienda_cliente.all()
-        resp = []
-        for one in clienti:
-            cantieri = one.cliente_cantiere.all()
-            for cantiere in cantieri:
-                ordini = cantiere.cantiere_ordine.all()
-                serializer = self.serializer_class(ordini,many=True)
-                for a in serializer.data:
-                    a['azienda'] = object.id
-                resp.append(serializer.data)
-        return Response(resp)
+        serializer = self.serializer_class(object,many=True)
+        #for a in serializer.data:
+        #        a['azienda'] = azienda_id
+        #        resp.append(serializer.data)
+        #clienti = object.azienda_cliente.all()
+        #resp = []
+        #for one in clienti:
+        #    cantieri = one.cliente_cantiere.all()
+        ##    for cantiere in cantieri:
+        #        ordini = cantiere.cantiere_ordine.all()
+        #        serializer = self.serializer_class(ordini,many=True)
+        #        for a in serializer.data:
+        #            a['azienda'] = object.id
+        #        resp.append(serializer.data)
+        return Response(serializer.data)
 
 class FattureAzienda(APIView):
     serializer_class = Fattureserializer
