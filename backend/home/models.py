@@ -274,6 +274,7 @@ class Ordine(models.Model):
     damagazzino = models.BooleanField(null=False,default=False)
     permagazzino = models.BooleanField(null=False,default=False)
     tipologia = models.CharField(max_length=2, choices=TipologiaFornitore.choices,default=TipologiaFornitore.MATERIALE, blank=True, null=True)
+    azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_ordine')
 
     def __str__(self):
         return "aaa"
