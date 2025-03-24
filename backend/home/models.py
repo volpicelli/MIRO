@@ -234,6 +234,13 @@ class Personale(models.Model):
         db_table = 'personale'
 
 class Documenti(models.Model):
+        """
+        class TipologiaDocumento(models.TextChoices):
+            SERVIZIO = "SE",_("Servizio")
+            MATERIALE = "MA",_("Materiale")
+            MACCHINARI = "NO",_("Noleggio")
+            ALTRO = "AL",_("Altro")
+        """
         def set_path(self,filename):
             #an = Album.objects.get(pk=self.album_id)
             #albumname= re.sub('[^a-zA-Z0-9]+', '', an.nome)
@@ -241,6 +248,8 @@ class Documenti(models.Model):
         cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_documenti')
         titolo = models.CharField(max_length=80, blank=True, null=True)
         media = models.FileField(upload_to=set_path,null=True,blank=True)
+        caricato_da =  models.CharField(max_length=80, blank=True, null=True)
+
         
         def __str__(self):
             return self.titolo
@@ -266,8 +275,10 @@ class Ordine(models.Model):
         SERVIZIO = "SE",_("Servizio")
         MATERIALE = "MA",_("Materiale")
         MACCHINARI = "NO",_("Noleggio")
+        ALTRO = "AL",_("Altro")
 
     data_ordine = models.DateField(blank=True, null=True)
+    data_consegna= models.DateField(blank=True, null=True)
     importo = models.FloatField(blank=True,null=True) 
     fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitori_ordine')
     cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_ordine')
