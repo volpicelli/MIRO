@@ -40,7 +40,7 @@ class ResetAzienda(APIView):
             one.current = False
             one.save()
         return Response("Reset Azienda fatto")
-
+"""
 class CurrentAzienda(APIView):
     serializer_class = Aziendaserializer
 
@@ -64,7 +64,7 @@ class SetCurrentAzienda(APIView):
         ret = self.serializer_class(a)
         return Response(ret.data)
 
-"""
+
 class AziendaList(generics.ListCreateAPIView):
     queryset = Azienda.objects.all()
     serializer_class = Aziendaserializer
