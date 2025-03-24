@@ -75,13 +75,13 @@ urlpatterns = [
 
 
         path('cantieri/list', CantiereList.as_view()),
-        
-        path('cantieri/azienda/<int:azienda_id>', CantieriAzienda.as_view()),
+        ### path('cantieri/azienda/<int:azienda_id>', CantieriAzienda.as_view()),
         path('cantiere/create', CantiereList.as_view()),
         path('cantiere/detail/<int:pk>',CantiereDetail.as_view()),
         path('cantiere/delete/<int:pk>', CantiereDetail.as_view()),
         path('cantiere/update/<int:pk>',CantiereDetail.as_view()),
-        path('cantiere/<int:cantiere_id>/ordini',OrdiniCantiere.as_view()),
+        path('cantiere/<int:id_cantiere>/ordini',OrdiniCantiere.as_view()),
+        path('cantiere/<int:id_cantiere>/fatture',FattureCantiere.as_view()),
 
 
 
@@ -97,6 +97,7 @@ urlpatterns = [
 
         path('azienda/setcurrent/<int:id_azienda>', SetCurrentAzienda.as_view()),
         path('azienda/getcurrent', CurrentAzienda.as_view()),
+        path('azienda/reset', ResetAzienda.as_view()),
         path('azienda/list', AziendaList.as_view()),
         path('azienda/create',AziendaList.as_view()),
         path('azienda/detail/<int:pk>',AziendaDetail.as_view()),
