@@ -30,7 +30,7 @@ from home.models import Azienda ,Personale,Assegnato_Cantiere,Cantiere,Ordine #,
 
 import json
 from django.conf import settings
-
+"""
 class ResetAzienda(APIView):
     #serializer_class = Aziendaserializer
 
@@ -64,7 +64,7 @@ class SetCurrentAzienda(APIView):
         ret = self.serializer_class(a)
         return Response(ret.data)
 
-
+"""
 class AziendaList(generics.ListCreateAPIView):
     queryset = Azienda.objects.all()
     serializer_class = Aziendaserializer

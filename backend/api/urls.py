@@ -95,9 +95,9 @@ urlpatterns = [
 
         path('articoli/ordine/<int:id_ordine>',ArticoliOrdine.as_view()),
 
-        path('azienda/setcurrent/<int:id_azienda>', SetCurrentAzienda.as_view()),
-        path('azienda/getcurrent', CurrentAzienda.as_view()),
-        path('azienda/reset', ResetAzienda.as_view()),
+        #path('azienda/setcurrent/<int:id_azienda>', SetCurrentAzienda.as_view()),
+        #path('azienda/getcurrent', CurrentAzienda.as_view()),
+        #path('azienda/reset', ResetAzienda.as_view()),
         path('azienda/list', AziendaList.as_view()),
         path('azienda/create',AziendaList.as_view()),
         path('azienda/detail/<int:pk>',AziendaDetail.as_view()),
