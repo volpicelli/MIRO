@@ -28,7 +28,8 @@ from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 #from .tipologiapersonale_serializer import TipologiaPersonaleserializer
 #from moneyed import Money
 # Create your views here.
-from home.models import Cantiere,Articoli,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino
+from home.models import Cantiere,Articoli,Fatture,Fornitori,Ordine,Personale,TipologiaLavori,Assegnato_Cantiere,Magazzino,\
+                        Documenti
 
 import json
 from django.db.models import Sum
@@ -40,6 +41,31 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+
+class UploadDocumento(APIView):
+
+    def post(self,request,cantiere_id):
+        file = request.FILES.get('file')
+        #file = [request.FILES.get('file[%d]' % i)
+        #for i in range(0, len(request.FILES))]  
+        #files = request.POST.getlist('file')
+        #if cantiere_id == None:
+        ff=[]
+        #for f in file:
+
+        d = Documenti(cantiere_id=cantiere_id)
+        d.save()
+        d.media=file
+        d.save()
+        ff.append(d.media.name)
+
+
+        #    for f in files:
+
+        return Response({
+            'file': ff,
+            'cantiere': cantiere_id
+        })
 
 class CustomAuthToken(ObtainAuthToken):
 

@@ -11,13 +11,15 @@ from api.views import   ResponsabileCantiere,AddOreLavoro,FattureOrdine,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoDelete,MagazzinoArticoli,CantieriPersonale,\
-                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken
+                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken,\
+                        UploadDocumento
                 
                         #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
 
 urlpatterns = [ 
         path('api-token-auth/', CustomAuthToken.as_view(), name='api_token_auth'),  # <-- And here
 
+        path('file-upload/<int:cantiere_id>',UploadDocumento.as_view()),
         path('login',LoginView.as_view()),
         path('ordinedamagazzino',OrdineDaMagazzino.as_view()),
         path('ordinecreate',OrdineCreate.as_view()),
