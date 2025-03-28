@@ -233,6 +233,15 @@ class Personale(models.Model):
         managed = True
         db_table = 'personale'
 
+class TipologiaDocumenti(models.Model):
+    descrizione = models.CharField(max_length=120, blank=True, null=True)
+    def __str__(self):
+            return self.descrizione
+    
+    class Meta:
+        managed = True
+        db_table = 'tipologiadocumenti'
+
 class Documenti(models.Model):
         """
         class TipologiaDocumento(models.TextChoices):
@@ -242,14 +251,16 @@ class Documenti(models.Model):
             ALTRO = "AL",_("Altro")
         """
         def set_path(self,filename):
-            #an = Album.objects.get(pk=self.album_id)
+            c = Cantiere.objects.get(pk=self.cantiere_id)
+            a = c.cliente.azienda.codcf
+
             #albumname= re.sub('[^a-zA-Z0-9]+', '', an.nome)
-            return 'foto/'+filename # +albumname +'/'+filename
+            return str(a) +'/'+ filename # +albumname +'/'+filename
         cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_documenti')
-        titolo = models.CharField(max_length=80, blank=True, null=True)
+        #tipologia = models.CharField(max_length=80, blank=True, null=True)
         media = models.FileField(upload_to=set_path,null=True,blank=True)
         caricato_da =  models.CharField(max_length=80, blank=True, null=True)
-
+        tipologia = models.ForeignKey(TipologiaDocumenti,null=True,on_delete=models.CASCADE,related_name='tipologia_documento')
         
         def __str__(self):
             return self.titolo
@@ -319,7 +330,7 @@ class Magazzino(models.Model):
     quantita = models.IntegerField(blank=True, null=True)
     prezzo_unitario = models.FloatField(blank=True,null=True)
     importo_totale = models.FloatField(blank=True,null=True) 
-    ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
+    #ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_magazzino')
 
     class Meta:
@@ -334,13 +345,25 @@ class Fatture(models.Model):
     importo =  models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
     pagato =   models.FloatField(blank=True,null=True)#MoneyField( decimal_places=2, default_currency='EUR')
     data_scadenza = models.DateField(blank=True, null=True)
-    ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_fatture')
+    #ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_fatture')
+    fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitore_fatture')
+    cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_fatture')
 
+    
     class Meta:
         managed = True
         db_table = 'fatture'
 
+class ScadenzarioFatture(models.Model):
+    importo_rata =models.FloatField(blank=True,null=True) 
+    scadenza_rata = models.DateField(blank=True, null=True)
+    fattura = models.ForeignKey(Fatture,null=True,on_delete=models.CASCADE,related_name='fatture_scadenzario')
 
+    class Meta:
+        managed = True
+        db_table = 'scadenzariofatture'
+#tabella scadenze
+#importo rata scadenza 
 
 
 
