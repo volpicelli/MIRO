@@ -93,8 +93,8 @@ class FattureCantiere(APIView):
             serializer = self.serializer_class(fatture,many=True)
             #serializer.data['cantiere'] = id_cantiere
             #serializer.data['ordine'] = ordine.id
-            altro = {'fattura':serializer.data, 'cantiere': id_cantiere}
+            #altro = {'fattura':serializer.data, 'cantiere': id_cantiere}
             
-            resp.append(altro)
+            resp.append(serializer.data)
 
         return Response(resp)
