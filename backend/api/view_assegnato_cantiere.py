@@ -11,10 +11,37 @@ from rest_framework import exceptions
 
 from .assegnato_cantiere_serializer import Assegnato_CantiereSerializer
 
-from home.models import Personale,Assegnato_Cantiere
+from home.models import Personale,Assegnato_Cantiere,Cantiere,Azienda
 
 import json
 from django.conf import settings
+class PersonaleAziendaAssegnatiCantieri(APIView):
+    queryset = Assegnato_Cantiere.objects.all()
+    serializer_class = Assegnato_CantiereSerializer
+    def get(self,request,azienda_id):
+        a=Azienda.objects.get(pk=azienda_id)
+        p=a.azienda_personale.all()
+        resp=[]
+        for one in p:
+            ac = one.personale_assegnato.all()
+            for pac in ac:
+                #resp.append(pac)
+                serializer =self.serializer_class(pac)
+                serializer2 = serializer.data
+                serializer2['cognome']=pac.personale.cognome
+                serializer2['nomecantiere']=pac.cantiere.nome
+                resp.append(serializer2)
+                
+
+            #ac = self.queryset.filter(personale=one)
+            #serializer =self.serializer_class(resp, many=True)
+            #resp.append(serializer.data)
+        #serializer = self.serializer_class(resp, many=True)
+        #serializer =self.serializer_class(resp, many=True)
+        return Response(resp)
+
+
+
 
 class Assegnato_CantiereList(generics.ListCreateAPIView):
     queryset = Assegnato_Cantiere.objects.all()
@@ -31,6 +58,20 @@ class Assegnato_CantiereList(generics.ListCreateAPIView):
         self.cognome  = p.cognome
         self.cantiere = cantiere
         return self.create(request, *args, **kwargs)
+    
+    def list(self,request):
+
+        #def list(self, request):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        for one in serializer.data:
+            c=Cantiere.objects.get(pk=one['cantiere'])
+            p=Personale.objects.get(pk=one['personale'])
+            one['cognome'] = p.cognome
+            one['nomecantiere']=c.nome
+        return Response(serializer.data)
+
 
     def handle_exception(self, exc):
         """

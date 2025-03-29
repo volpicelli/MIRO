@@ -262,8 +262,8 @@ class Documenti(models.Model):
         caricato_da =  models.CharField(max_length=80, blank=True, null=True)
         tipologia = models.ForeignKey(TipologiaDocumenti,null=True,on_delete=models.CASCADE,related_name='tipologia_documento')
         
-        def __str__(self):
-            return self.titolo
+        #def __str__(self):
+        #    return self.media.path
     
         class Meta:
             managed = True

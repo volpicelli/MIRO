@@ -11,6 +11,7 @@ from rest_framework import exceptions
 from .cantiere_serializer import Cantiereserializer
 from .ordine_serializer import Ordineserializer
 from .fatture_serializer import Fattureserializer
+from .documenti_serializer import Documentiserializer
 from home.models import Cantiere,Azienda,Cliente,Fatture
 import json
 from django.conf import settings
@@ -70,7 +71,16 @@ class OrdiniCantiere(APIView):
 
         return Response(serializer.data)
     
+class CantiereDocumenti(APIView):
+    serializer_class = Documentiserializer
 
+    def get(self,request,id_cantiere):
+        c = Cantiere.objects.get(pk=id_cantiere)
+        d = c.cantiere_documenti.all()
+        serializer = self.serializer_class(d,many=True)
+
+        return Response(serializer.data)
+  
 class FattureCantiere(APIView):
     serializer_class = Fattureserializer
 

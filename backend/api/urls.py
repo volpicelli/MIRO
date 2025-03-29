@@ -6,6 +6,7 @@ from api.view_articoli import *
 from api.view_assegnato_cantiere import *
 from api.view_cliente import *
 from api.view_cantiere import *
+from api.view_documenti import *
 from rest_framework.authtoken.views import obtain_auth_token  
 from api.views import   ResponsabileCantiere,AddOreLavoro,FattureOrdine,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
@@ -32,6 +33,7 @@ urlpatterns = [
         path('azienda/<int:azienda_id>/fatture',FattureAzienda.as_view()),
         
         path('azienda/<int:azienda_id>/personale/cantiere/<int:cantiere_id>',PersonaleAziendaCantiere.as_view()),
+        path('azienda/<int:azienda_id>/personale/cantieri',PersonaleAziendaAssegnatiCantieri.as_view()),
         
 
         path('addorelavoro/cantiere/<int:cantiere_id>/personale/<int:personale_id>/<int:ore>',AddOreLavoro.as_view()),
@@ -45,6 +47,16 @@ urlpatterns = [
         path('assegnatocantiere/delete/<int:pk>', Assegnato_CantiereDetail.as_view()),
         path('assegnatocantiere/update/<int:pk>', Assegnato_CantiereDetail.as_view()),
 
+
+
+
+        path('documenti/list', DocumentiList.as_view()),
+        path('documenti/create', DocumentiList.as_view()),
+        path('documenti/detail/<int:pk>', DocumentiDetail.as_view()),
+        path('documenti/delete/<int:pk>', DocumentiDetail.as_view()),
+        path('documenti/update/<int:pk>', DocumentiDetail.as_view()),
+        path('documenti/cantiere/<int:cantiere_id>', DocumentiCantiere.as_view()),
+        path('documenti/azienda/<int:azienda_id>', DocumentiAzienda.as_view()),
 
         path('tipologialavori/list', TipologiaLavoriList.as_view()),
         path('tipologialavori/create', TipologiaLavoriList.as_view()),
@@ -83,6 +95,7 @@ urlpatterns = [
         path('cantiere/delete/<int:pk>', CantiereDetail.as_view()),
         path('cantiere/update/<int:pk>',CantiereDetail.as_view()),
         path('cantiere/<int:id_cantiere>/ordini',OrdiniCantiere.as_view()),
+        path('cantiere/<int:id_cantiere>/documenti',CantiereDocumenti.as_view()),
         path('cantiere/<int:id_cantiere>/fatture',FattureCantiere.as_view()),
 
 
