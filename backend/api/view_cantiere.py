@@ -86,18 +86,15 @@ class FattureCantiere(APIView):
 
     def get(self,request,id_cantiere):
         c = Cantiere.objects.get(pk=id_cantiere)
-        ordini = c.cantiere_ordine.all()
+        fatture = c.cantiere_fatture.all()
         resp=[]
-        for ordine in ordini:
-
-            fatture = ordine.ordine_fatture.all()
-            #for fattura in fatture:
-            if fatture:
-                serializer = self.serializer_class(fatture,many=True)
-                #serializer.data['cantiere'] = id_cantiere
-                #serializer.data['ordine'] = ordine.id
-                altro = {'fattura':serializer.data, 'cantiere': id_cantiere,'ordine': ordine.id}
-                
-                resp.append(altro)
+        
+        if fatture:
+            serializer = self.serializer_class(fatture,many=True)
+            #serializer.data['cantiere'] = id_cantiere
+            #serializer.data['ordine'] = ordine.id
+            altro = {'fattura':serializer.data, 'cantiere': id_cantiere}
+            
+            resp.append(altro)
 
         return Response(resp)
