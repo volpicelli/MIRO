@@ -336,6 +336,7 @@ class OrdineCreate(APIView):
         o = Ordine( cantiere=c,
                     fornitore=f,
                     data_ordine=data['data_ordine'],
+                    data_consegna = data['data_consegna'],
                     #importo=data['importo'],
                     permagazzino=permagazzino,
                     damagazzino= damagazzino, #data['mestesso'],
