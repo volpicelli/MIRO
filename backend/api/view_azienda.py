@@ -181,15 +181,14 @@ class FattureAzienda(APIView):
         for one in clienti:
             cantieri = one.cliente_cantiere.all()
             for cantiere in cantieri:
-                ordini = cantiere.cantiere_ordine.all()
-                for ordine in ordini:
-                    fattura = ordine.ordine_fatture.all()
-                    
-                    if fattura:
-                        serializer = self.serializer_class(fattura[0])
-                    #for a in serializer.data:
-                        serializer.data['azienda'] = object.id
-                        resp.append(serializer.data)
+                fatture = cantiere.cantiere_fatture.all()
+                for fattura in fatture:   
+                    serializer = self.serializer_class(fattura)#,many=True)
+                    serializer.data['azienda'] = object.id
+                    resp.append(serializer.data)
+                #for a in serializer.data:
+        #serializer.data['azienda'] = object.id
+        #           resp.append(serializer.data)
         return Response(resp)
     
 class PersonaleAziendaCantiere(APIView):
