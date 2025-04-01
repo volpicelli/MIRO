@@ -133,8 +133,29 @@ class Sesso(models.TextChoices):
         MASCHIO='M'
         FEMMINA='F'
 
+class BancaFornitori(models.Model):
+    codfor = models.CharField(max_length=20, blank=True, null=True)
+    intestat = models.CharField(max_length=80, blank=True, null=True)
+    abi=  models.CharField(max_length=10, blank=True, null=True)
+    cab=  models.CharField(max_length=10, blank=True, null=True)
+    conto=  models.CharField(max_length=30, blank=True, null=True)
+    cin=  models.CharField(max_length=10, blank=True, null=True)
+    iban=  models.CharField(max_length=40, blank=True, null=True)
+    indir=  models.CharField(max_length=60, blank=True, null=True)
+    prov=  models.CharField(max_length=10, blank=True, null=True)
+    swift=  models.CharField(max_length=30, blank=True, null=True)
+    desban1=  models.CharField(max_length=40, blank=True, null=True)
+    desban2=  models.CharField(max_length=30, blank=True, null=True)
+    localita=  models.CharField(max_length=30, blank=True, null=True)
+    cap=  models.CharField(max_length=10, blank=True, null=True)
+    fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitori_banca')
 
+    def __str__(self):
+        return self.codfor
 
+    class Meta:
+        managed = True
+        db_table = 'bancafornitori'
 
 
 class Cliente(models.Model):
@@ -357,6 +378,9 @@ class Fatture(models.Model):
 class ScadenzarioFatture(models.Model):
     importo_rata =models.FloatField(blank=True,null=True) 
     scadenza_rata = models.DateField(blank=True, null=True)
+    importo_pagato = models.FloatField(blank=True,null=True) 
+    data_pagamento = models.DateField(blank=True, null=True)
+    status = models.BooleanField(default=False,blank=True,null=True)
     fattura = models.ForeignKey(Fatture,null=True,on_delete=models.CASCADE,related_name='fatture_scadenzario')
 
     class Meta:

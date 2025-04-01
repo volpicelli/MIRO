@@ -7,17 +7,20 @@ from api.view_assegnato_cantiere import *
 from api.view_cliente import *
 from api.view_cantiere import *
 from api.view_documenti import *
+from api.syncData import *
 from rest_framework.authtoken.views import obtain_auth_token  
 from api.views import   ResponsabileCantiere,AddOreLavoro,FattureOrdine,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoDelete,MagazzinoArticoli,CantieriPersonale,\
-                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken,\
-                        UploadDocumento
+                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken
+                        
                 
                         #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
 
 urlpatterns = [ 
+    
+        path('fornitori/sync', FornitoriSync.as_view(), name='sync_fornitori'),  # <-- And here
         path('api-token-auth/', CustomAuthToken.as_view(), name='api_token_auth'),  # <-- And here
 
         path('file-upload/<int:cantiere_id>',UploadDocumento.as_view()),
