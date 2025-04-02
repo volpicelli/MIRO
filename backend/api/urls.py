@@ -8,6 +8,8 @@ from api.view_cliente import *
 from api.view_cantiere import *
 from api.view_documenti import *
 from api.view_scadenzariofatture import *
+from api.view_bancafornitore import *
+from api.bancafornitore_seriallizer import BancaFornitoriserializer
 from api.scadenzariofatture_serializer import ScadenzarioFatture
 from api.syncData import *
 from rest_framework.authtoken.views import obtain_auth_token  
@@ -75,6 +77,14 @@ urlpatterns = [
         path('fornitori/detail/<int:pk>', FornitoriDetail.as_view()),
         path('fornitori/delete/<int:pk>', FornitoriDetail.as_view()),
         path('fornitori/update/<int:pk>', FornitoriDetail.as_view()),
+
+
+
+        path('bancafornitori/list', BancaFornitoriList.as_view()),
+        path('bancafornitori/create', BancaFornitoriList.as_view()),
+        path('bancafornitori/detail/<int:pk>', BancaFornitoriDetail.as_view()),
+        path('bancafornitori/delete/<int:pk>', BancaFornitoriDetail.as_view()),
+        path('bancafornitori/update/<int:pk>', BancaFornitoriDetail.as_view()),
 
         path('personale/list', PersonaleList.as_view()),
         path('personale/create', PersonaleList.as_view()),
