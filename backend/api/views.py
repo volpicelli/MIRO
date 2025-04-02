@@ -204,14 +204,20 @@ class PersonaleSuCantiere(APIView):
 
 
 
-
+"""
 class FattureOrdine(APIView):
     serializer_class = Fattureserializer
     def get(self,request,ordine_id):
         fatture = Fatture.objects.filter(ordine_id=ordine_id)
         serializer = self.serializer_class(fatture,many=True)
         return Response(serializer.data)
- 
+""" 
+
+class FattureGetTipologia(APIView):
+    def get(self,request):
+        o = Fatture.tipologia.field.choices
+        return Response(o)
+    
 class FattureList(generics.ListCreateAPIView):
     queryset = Fatture.objects.all()
     serializer_class = Fattureserializer

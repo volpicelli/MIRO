@@ -11,11 +11,12 @@ from api.view_scadenzariofatture import *
 from api.scadenzariofatture_serializer import ScadenzarioFatture
 from api.syncData import *
 from rest_framework.authtoken.views import obtain_auth_token  
-from api.views import   ResponsabileCantiere,AddOreLavoro,FattureOrdine,\
+from api.views import   ResponsabileCantiere,AddOreLavoro,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoDelete,MagazzinoArticoli,CantieriPersonale,\
-                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken
+                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken,\
+                        FattureGetTipologia
                         
                 
                         #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
@@ -135,6 +136,7 @@ urlpatterns = [
 
 
         #path('fatture/ordine/<int:ordine_id>', FattureOrdine.as_view()),
+        path('fatture/getTipologia', FattureGetTipologia.as_view()),
         path('fatture/list', FattureList.as_view()),
         path('fatture/create',FattureList.as_view()),
         path('fatture/detail/<int:pk>',FattureDetail.as_view()),
