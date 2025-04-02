@@ -7,6 +7,8 @@ from api.view_assegnato_cantiere import *
 from api.view_cliente import *
 from api.view_cantiere import *
 from api.view_documenti import *
+from api.view_scadenzariofatture import *
+from api.scadenzariofatture_serializer import ScadenzarioFatture
 from api.syncData import *
 from rest_framework.authtoken.views import obtain_auth_token  
 from api.views import   ResponsabileCantiere,AddOreLavoro,FattureOrdine,\
@@ -132,12 +134,19 @@ urlpatterns = [
         path('cliente/update/<int:pk>',ClienteDetail.as_view()),
 
 
-        path('fatture/ordine/<int:ordine_id>', FattureOrdine.as_view()),
+        #path('fatture/ordine/<int:ordine_id>', FattureOrdine.as_view()),
         path('fatture/list', FattureList.as_view()),
         path('fatture/create',FattureList.as_view()),
         path('fatture/detail/<int:pk>',FattureDetail.as_view()),
         path('fatture/delete/<int:pk>', FattureDetail.as_view()),
         path('fatture/update/<int:pk>',FattureDetail.as_view()),
+
+        path('scadenzariofatture/list', ScadenzarioFattureList.as_view()),
+        path('scadenzariofatture/create',ScadenzarioFattureList.as_view()),
+        path('scadenzariofatture/detail/<int:pk>',ScadenzarioFattureDetail.as_view()),
+        path('scadenzariofatture/delete/<int:pk>', ScadenzarioFattureDetail.as_view()),
+        path('scadenzariofatture/update/<int:pk>',ScadenzarioFattureDetail.as_view()),
+
 
 
         path('ordine/getTipologia', OrdineGetTipologia.as_view()),
@@ -149,7 +158,7 @@ urlpatterns = [
         #path('ordine/<int:ordine_id>/articoli',ArticoliOrdine.as_view()),
         
         path('ordini/cantiere/<int:id_cantiere>',OrdiniCantiere.as_view()),
-        path('fatture/cantiere/<int:id_cantiere>',FattureCantiere.as_view()),
+        #path('fatture/cantiere/<int:id_cantiere>',FattureCantiere.as_view()),
 
 
         

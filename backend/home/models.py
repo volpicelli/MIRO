@@ -119,8 +119,8 @@ class Fornitori(models.Model):
     cogn_pf = models.CharField(max_length=40, blank=True, null=True)
     sesso = models.CharField(max_length=2, blank=True, null=True,choices=Sesso.choices)
 
-    banca = models.CharField(max_length=40,blank=True, null=True)
-    iban = models.CharField(max_length=40,blank=True, null=True)
+    #banca = models.CharField(max_length=40,blank=True, null=True)
+    #iban = models.CharField(max_length=40,blank=True, null=True)
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_fornitore')
 
     def __str__(self):
@@ -358,7 +358,11 @@ class Magazzino(models.Model):
         managed = True
         db_table = 'magazzino'
 
-
+class TipologiaFattura(models.TextChoices):
+        SERVIZIO = "SE",_("Servizio")
+        MATERIALE = "MA",_("Materiale")
+        MACCHINARI = "NO",_("Noleggio")
+        ALTRO = "AL",_("Altro")
 class Fatture(models.Model):
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     n_fattura = models.CharField(db_column='n_fattura', max_length=40, blank=True, null=True)  # Field renamed to remove unsuitable characters.
@@ -369,6 +373,7 @@ class Fatture(models.Model):
     #ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_fatture')
     fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitore_fatture')
     cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_fatture')
+    tipologia = models.CharField(max_length=2, choices=TipologiaFattura.choices,default=TipologiaFattura.MATERIALE, blank=True, null=True)
 
     
     class Meta:
