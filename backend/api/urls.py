@@ -11,21 +11,30 @@ from api.view_scadenzariofatture import *
 from api.view_bancafornitore import *
 from api.bancafornitore_seriallizer import BancaFornitoriserializer
 from api.scadenzariofatture_serializer import ScadenzarioFatture
-from api.syncData import *
+from api.syncFornitori import *
+from api.syncClienti import *
 from rest_framework.authtoken.views import obtain_auth_token  
 from api.views import   ResponsabileCantiere,AddOreLavoro,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoDelete,MagazzinoArticoli,CantieriPersonale,\
-                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken,\
-                        FattureGetTipologia
+                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken
+                        
                         
                 
                         #ResponsabileDetail,ResponsabileList,ResponsabileCantiere,\
 
 urlpatterns = [ 
     
+        path('fornitori/banca/sync', BancaFornitoriSync.as_view(), name='sync_bancafornitori'),  # <-- And here
+        path('fornitori/condpag/sync', FornitoriCondPagamentoSync.as_view(), name='sync_codpagfornitori'),  # <-- And here
         path('fornitori/sync', FornitoriSync.as_view(), name='sync_fornitori'),  # <-- And here
+        
+        path('clienti/banca/sync', BancaClientiSync.as_view(), name='sync_bancaclienti'),  # <-- And here
+        path('clienti/condpag/sync', ClientiCondPagamentoSync.as_view(), name='sync_codpagclienti'),  # <-- And here
+        path('clienti/sync', ClientiSync.as_view(), name='sync_clienti'),  # <-- And here
+        
+        
         path('api-token-auth/', CustomAuthToken.as_view(), name='api_token_auth'),  # <-- And here
 
         path('file-upload/<int:cantiere_id>',UploadDocumento.as_view()),
@@ -112,7 +121,7 @@ urlpatterns = [
         path('cantiere/update/<int:pk>',CantiereDetail.as_view()),
         path('cantiere/<int:id_cantiere>/ordini',OrdiniCantiere.as_view()),
         path('cantiere/<int:id_cantiere>/documenti',CantiereDocumenti.as_view()),
-        path('cantiere/<int:id_cantiere>/fatture',FattureCantiere.as_view()),
+        #path('cantiere/<int:id_cantiere>/fatture',FattureCantiere.as_view()),
 
 
 
@@ -146,7 +155,7 @@ urlpatterns = [
 
 
         #path('fatture/ordine/<int:ordine_id>', FattureOrdine.as_view()),
-        path('fatture/getTipologia', FattureGetTipologia.as_view()),
+        #path('fatture/getTipologia', FattureGetTipologia.as_view()),
         path('fatture/list', FattureList.as_view()),
         path('fatture/create',FattureList.as_view()),
         path('fatture/detail/<int:pk>',FattureDetail.as_view()),

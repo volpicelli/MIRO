@@ -81,6 +81,7 @@ class CantiereDocumenti(APIView):
 
         return Response(serializer.data)
   
+""" 
 class FattureCantiere(APIView):
     serializer_class = Fattureserializer
 
@@ -100,3 +101,4 @@ class FattureCantiere(APIView):
         #    serializer.data=[]
 
         return Response(serializer.data)
+"""

@@ -213,11 +213,12 @@ class FattureOrdine(APIView):
         return Response(serializer.data)
 """ 
 
+"""
 class FattureGetTipologia(APIView):
     def get(self,request):
         o = Fatture.tipologia.field.choices
         return Response(o)
-    
+"""    
 class FattureList(generics.ListCreateAPIView):
     queryset = Fatture.objects.all()
     serializer_class = Fattureserializer

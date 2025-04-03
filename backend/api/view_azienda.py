@@ -176,16 +176,16 @@ class FattureAzienda(APIView):
         except:
             msg=" Azienda non esiste "
             return Response(msg)
-        clienti = object.azienda_cliente.all()
+        fornitori = object.azienda_fornitore.all()
         resp = []
-        for one in clienti:
-            cantieri = one.cliente_cantiere.all()
-            for cantiere in cantieri:
-                fatture = cantiere.cantiere_fatture.all()
-                for fattura in fatture:   
-                    serializer = self.serializer_class(fattura)#,many=True)
-                    serializer.data['azienda'] = object.id
-                    resp.append(serializer.data)
+        for one in fornitori:
+            
+            fatture = one.fornitore_fatture.all()
+            
+            for fattura in fatture:   
+                serializer = self.serializer_class(fattura)#,many=True)
+                serializer.data['azienda'] = object.id
+                resp.append(serializer.data)
                 #for a in serializer.data:
         #serializer.data['azienda'] = object.id
         #           resp.append(serializer.data)
