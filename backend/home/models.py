@@ -26,8 +26,8 @@ class Azienda(models.Model):
     fmemo = models.TextField( blank=True, null=True)
     nome_pf = models.CharField(max_length=40, blank=True, null=True)
     cogn_pf = models.CharField(max_length=40, blank=True, null=True)
-    banca = models.CharField(max_length=40,blank=True, null=True)
-    iban = models.CharField(max_length=40,blank=True, null=True)
+    #banca = models.CharField(max_length=40,blank=True, null=True)
+    #iban = models.CharField(max_length=40,blank=True, null=True)
     def __str__(self):
         return self.nome
 
@@ -231,6 +231,29 @@ class Cantiere(models.Model):
         managed = True
         db_table = 'cantiere'
 
+    def GetOrdini(self):
+        ordini = self.cantiere_ordine.all()
+        return ordini
+    
+    
+    
+    def GetPersonale(self):
+
+        pers_ass = self.cantiere_assegnato.all()
+        pers = []
+        for one in pers_ass:
+            pers.append(one.personale)
+        return pers
+    
+    def getResponsabile(self):
+        pers_ass = self.cantiere_assegnato.all()
+        pers = []
+        for one in pers_ass:
+            if one.responsabile:
+                return one.personale
+            #pers.append(one.personale)
+        return None
+
 class Personale(models.Model):
     
     nome = models.CharField(max_length=40, blank=True, null=True)
@@ -363,7 +386,7 @@ class TipologiaFattura(models.TextChoices):
         MATERIALE = "MA",_("Materiale")
         MACCHINARI = "NO",_("Noleggio")
         ALTRO = "AL",_("Altro")
-        
+
 class Fatture(models.Model):
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     n_fattura = models.CharField(db_column='n_fattura', max_length=40, blank=True, null=True)  # Field renamed to remove unsuitable characters.
