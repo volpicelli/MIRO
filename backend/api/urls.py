@@ -121,7 +121,9 @@ urlpatterns = [
         path('cantiere/update/<int:pk>',CantiereDetail.as_view()),
         path('cantiere/<int:id_cantiere>/ordini',OrdiniCantiere.as_view()),
         path('cantiere/<int:id_cantiere>/documenti',CantiereDocumenti.as_view()),
-        #path('cantiere/<int:id_cantiere>/fatture',FattureCantiere.as_view()),
+        
+
+        path('cantiere/<int:id_cantiere>/costo',CantiereCosto.as_view()),
 
 
 

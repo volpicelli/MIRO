@@ -3,6 +3,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import FileResponse
+from django.db.models import Sum,Count
+
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.core import serializers
@@ -12,7 +14,8 @@ from .cantiere_serializer import Cantiereserializer
 from .ordine_serializer import Ordineserializer
 from .fatture_serializer import Fattureserializer
 from .documenti_serializer import Documentiserializer
-from home.models import Cantiere,Azienda,Cliente,Fatture
+from .costocantiere_serializer import Costo_Cantiereserializer
+from home.models import Cantiere,Azienda,Cliente,Fatture,Ordine
 import json
 from django.conf import settings
 
@@ -80,7 +83,54 @@ class CantiereDocumenti(APIView):
         serializer = self.serializer_class(d,many=True)
 
         return Response(serializer.data)
-  
+
+
+class CantiereCosto(APIView):
+       
+       def get(self,request,id_cantiere):
+        cantiere = Cantiere.objects.get(pk=id_cantiere)
+        ordini = cantiere.GetOrdini()
+        #fatture = cantiere.GetFatture()
+        personaleassegnato = cantiere.cantiere_assegnato.all()
+        pa = Costo_Cantiereserializer(personaleassegnato,many=True)
+        totale=0
+        for one in personaleassegnato:
+            tot = float(one.ore_lavorate * one.personale.wage_lordo)
+            totale+=tot
+
+        resptot = {}
+        resptot['CostoPersonale'] = pa.data
+        
+
+        context ={}
+        #context['fatture']= fatture
+        context['cantiere']= cantiere
+        context['ordini']= ordini
+        
+        resptot['CostoOrdini']= [] #Ordine.tipologia.field.choices
+
+        tipologia_ordini =  Ordine.tipologia.field.choices
+        for one in tipologia_ordini:
+            ct = {}
+            im = ordini.filter(tipologia=one[0]).aggregate(Sum('importo'),count=Count('id'))
+            ct['tipologia'] = one[0]
+            ct['importo']=im['importo__sum']
+            ct['n_ordini'] = str(im['count'])
+            resptot['CostoOrdini'].append(ct)
+
+
+        totale_ordini = ordini.aggregate(Sum('importo'))
+        if totale_ordini['importo__sum'] is None:
+            totale_ordini['importo__sum']=0.0
+        else :
+            totale_ordini['importo__sum']=float(totale_ordini['importo__sum'])
+        context['totale_ordini'] = totale_ordini['importo__sum']
+        context['personaleassegnato']= personaleassegnato
+        context['totalepersonale']= totale
+        
+        context['totalecantiere']= totale + totale_ordini['importo__sum']
+
+        return Response(resptot)
 """ 
 class FattureCantiere(APIView):
     serializer_class = Fattureserializer
