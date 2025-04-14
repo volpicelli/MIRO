@@ -374,13 +374,15 @@ class Magazzino(models.Model):
     quantita = models.IntegerField(blank=True, null=True)
     prezzo_unitario = models.FloatField(blank=True,null=True)
     importo_totale = models.FloatField(blank=True,null=True) 
-    #ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
+    ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_magazzino')
 
     class Meta:
         managed = True
         db_table = 'magazzino'
-
+    
+    
+    
 class TipologiaFattura(models.TextChoices):
         SERVIZIO = "SE",_("Servizio")
         MATERIALE = "MA",_("Materiale")
