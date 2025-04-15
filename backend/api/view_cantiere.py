@@ -113,12 +113,12 @@ class CantiereCosto(APIView):
         for one in tipologia_ordini:
             ct = {}
             im = ordini.filter(tipologia=one[0]).aggregate(Sum('importo'),count=Count('id'))
-            ct['tipologia'] = one[0]
+            ct['tipologia'] = one[0] #,one[1]]
             ct['importo']=im['importo__sum']
             ct['n_ordini'] = str(im['count'])
             resptot['CostoOrdini'].append(ct)
 
-
+        """
         totale_ordini = ordini.aggregate(Sum('importo'))
         if totale_ordini['importo__sum'] is None:
             totale_ordini['importo__sum']=0.0
@@ -129,7 +129,7 @@ class CantiereCosto(APIView):
         context['totalepersonale']= totale
         
         context['totalecantiere']= totale + totale_ordini['importo__sum']
-
+        """
         return Response(resptot)
 """ 
 class FattureCantiere(APIView):

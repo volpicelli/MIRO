@@ -17,7 +17,7 @@ from .fatture_serializer  import Fattureserializer
 from .fornitori_serializer import Fornitoriserializer
 from .ordine_serializer import Ordineserializer
 from .magazzino_serializer import Magazzinoserializer
-from .ordineupdate_serializer import *
+from .ordineupdate_serializer import OrdineUpdateserializer
 #from .tipologialavori_serializer import TipologiaLavoriSerializer
 from .personale_serializer import Personaleserializer
 #from .responsabile_serializer import Responsabileserializer
