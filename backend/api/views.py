@@ -222,7 +222,7 @@ class FattureGetTipologia(APIView):
         return Response(o)
 """    
 class FattureList(generics.ListCreateAPIView):
-    queryset = Fatture.objects.all()
+    queryset = Fatture.objects.all().order_by('id')
     serializer_class = Fattureserializer
     #permission_classes = [IsAuthenticated]
 
@@ -246,7 +246,7 @@ class FattureDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
  
 class FornitoriList(generics.ListCreateAPIView):
-    queryset = Fornitori.objects.all()
+    queryset = Fornitori.objects.all().order_by('id')
     serializer_class = Fornitoriserializer
     #permission_classes = [IsAuthenticated]
 
@@ -501,7 +501,7 @@ class OrdineDaMagazzino(APIView):
         return Response(ret)
 
 class OrdineList(generics.ListCreateAPIView):
-    queryset = Ordine.objects.all()
+    queryset = Ordine.objects.all().order_by('id')
     serializer_class = Ordineserializer
 
     
@@ -526,7 +526,7 @@ class OrdineDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class PersonaleList(generics.ListCreateAPIView):
-    queryset = Personale.objects.all()
+    queryset = Personale.objects.all().order_by('id')
     serializer_class = Personaleserializer
 
 
@@ -561,7 +561,7 @@ class GroupMagazzino(APIView):
         return Response(res  )
 
 class MagazzinoList(generics.ListCreateAPIView):
-    queryset = Magazzino.objects.all()
+    queryset = Magazzino.objects.all().order_by('id')
     serializer_class = Magazzinoserializer
 
 class MagazzinoDelete(generics.RetrieveUpdateDestroyAPIView):
