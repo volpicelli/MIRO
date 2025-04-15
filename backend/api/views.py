@@ -17,6 +17,7 @@ from .fatture_serializer  import Fattureserializer
 from .fornitori_serializer import Fornitoriserializer
 from .ordine_serializer import Ordineserializer
 from .magazzino_serializer import Magazzinoserializer
+from .ordineupdate_serializer import *
 #from .tipologialavori_serializer import TipologiaLavoriSerializer
 from .personale_serializer import Personaleserializer
 #from .responsabile_serializer import Responsabileserializer
@@ -50,6 +51,7 @@ class CustomAuthToken(ObtainAuthToken):
                                        context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+
         all = user.userazienda.all()
         azn= []
         azid = []
@@ -57,6 +59,8 @@ class CustomAuthToken(ObtainAuthToken):
             azn.append( one.azienda.nome )
             azid.append( one.azienda.id)
             request.session['azienda']=one.azienda.id
+        #if user.username is not 'user4sync':
+        #    Token.objects.filter(user=user).delete()
         token, created = Token.objects.get_or_create(user=user)
 
         return Response({
@@ -107,8 +111,6 @@ class AddOreLavoro(APIView):
 
 class ResponsabileCantiere(APIView):
     serializer_class = Personaleserializer
-    #permission_classes = [IsAuthenticated]
-
 
     def get(self,request,id_cantiere):
         ret=[]
@@ -264,11 +266,14 @@ class FornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
 
         object = Fornitori.objects.get(pk=pk) #kwargs['pk'])
         serializer = self.serializer_class(object)
+        serializer.data['pollo']= object.codpag
         #user = request.user.last_name
         ##ss={}
         #ss['q']=serializer.data
         #ss['user']=user
         return Response(serializer.data)
+
+#class FornitoriCondPag(APIView):
 
 
 class OrdineGetTipologia(APIView):
@@ -303,57 +308,56 @@ class OrdineCreate(APIView):
         # Ordine normale da fornitore per un cantiere
 
         # Tipologia qualsiasi
-        #if data['magazzino'] is not True and data['mestesso'] is not True:
+
         damagazzino = False
-        if 'damagazzino' not in data or data['damagazzino'] == False:
+        #if 'damagazzino' not in data or data['damagazzino'] == False:
         
-            try:
-                f = Fornitori.objects.get(pk=data['fornitore'])
-            except ObjectDoesNotExist:
-                error_msg=" Fornitore non esiste"
-                return Response(error_msg)#,safe=False)
-        else:
-            damagazzino = True
-            try:
-                f = Fornitori.objects.get(pk=data['fornitore'])
-            except ObjectDoesNotExist:
-                error_msg=" Fornitore non esiste"
-                return Response(error_msg)
+        if 'damagazzino' in data.keys() :
+            if data['damagazzino'] == True:
+        
+                damagazzino = True
+                try:
+                    c  = Cantiere.objects.get(pk=data['cantiere'])
+                    f = Fornitori.objects.get(pk=data['fornitore'])
+                    azienda  = c.cliente.azienda
+
+                except ObjectDoesNotExist:
+                    error_msg=" Fornitore non esiste"
+                    return Response(error_msg)
 
         permagazzino = False
-        if 'permagazzino' not in data or data['permagazzino']== False:
+        if 'permagazzino' in data.keys():
+            if data['permagazzino']== True:
+                permagazzino = True
 
-            try:
-                c  = Cantiere.objects.get(pk=data['cantiere'])
-            except ObjectDoesNotExist:
-                error_msg=" Cantiere non esiste"
-                return Response(error_msg)#,safe=False)
-        else:
-            c=None
-            permagazzino=True
-        #if 'damagazzino' in data or data['damagazzino']== True:
-
+                try:
+                    c  = None # Cantiere.objects.get(pk=data['cantiere'])
+                    f = Fornitori.objects.get(pk=data['fornitore'])
+                    azienda = f.azienda
+                except ObjectDoesNotExist:
+                    error_msg=" Fornitore non esiste"
+                    return Response(error_msg)#,safe=False)
+        
 # Ordine.TipologiaFornitore.choices
 # [('SE', 'Servizio'), ('MA', 'Materiale'), ('NO', 'Noleggio')]
-        #try:
-        #    t  = TipologiaLavori.objects.get(pk=data['tipologia'])
-        #except ObjectDoesNotExist:
-        #    error_msg=" Tipologia non esiste"
-        #    return Response(error_msg)#,safe=False)
+
+        if permagazzino == False and damagazzino == False:
+            c  = Cantiere.objects.get(pk=data['cantiere'])
+            f  = Fornitori.objects.get(pk=data['fornitore'])
+            azienda  = c.cliente.azienda
         o = Ordine( cantiere=c,
                     fornitore=f,
                     data_ordine=data['data_ordine'],
                     data_consegna = data['data_consegna'],
-                    #importo=data['importo'],
                     permagazzino=permagazzino,
-                    damagazzino= damagazzino, #data['mestesso'],
-                    tipologia= data['tipologia'], #t.id #data['tipologia']
-                    azienda=f.azienda
+                    damagazzino= damagazzino, 
+                    tipologia= data['tipologia'], 
+                    azienda=azienda
                     )
         o.save()
         importo = 0.0
         # Preleva materiale dal Magazzino
-        if damagazzino: # not in data or data['damagazzino'] == False:
+        if damagazzino: 
             for one in data['articoli']:
                 a = Articoli()
                 a.ordine=o
@@ -365,23 +369,11 @@ class OrdineCreate(APIView):
                 a.save()
                 m = Magazzino.objects.get(pk=one['id'])
                 m.quantita = m.quantita - a.quantita
+                m.ordine=o
                 m.save()
             o.importo = importo
             o.save()
-            """
-            else: 
-                for one in data['articoli']:
-                    a = Articoli()
-                    a.ordine=o
-                    a.descrizione=one['descrizione']
-                    a.quantita = one['quantita']
-                    a.prezzo_unitario = one['prezzo_unitario']
-                    a.importo_totale = int(one['quantita']) * float(one['prezzo_unitario'])
-                    importo += a.importo_totale
-                    a.save()
-                o.importo = importo
-                o.save()
-                """
+            
             # Ordina  materiale per il  Magazzino
         elif permagazzino: 
             for one in data['articoli']:
@@ -429,6 +421,30 @@ class OrdineCreate(APIView):
         return Response(os.data)#,safe=False)
 
         #    os = Ordineserializer(o)
+
+class OrdineUpdate(APIView):
+    serializer_class = Ordineserializer
+
+    def get(self,request,ordine_id):
+        o = Ordine.objects.get(pk=ordine_id)
+        ar = o.ordine_articoli.all()
+        serializer = self.serializer_class(o)
+        #serializer.data['articoli'] =[]
+        a=[]
+        #ars = Articoliserializer(ar,many=True)
+        for one in ar:
+            ars = Articoliserializer(one)
+            a.append(ars.data)
+        #serializer.data['articoli']=a
+        resp = {}
+        resp['ordine']=serializer.data
+        resp['articoli'] = a
+        return Response(resp)
+    
+    #def post(self,request):
+
+
+             
 
 
 
