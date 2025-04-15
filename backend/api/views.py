@@ -561,7 +561,7 @@ class GroupMagazzino(APIView):
         return Response(res  )
 
 class MagazzinoList(generics.ListCreateAPIView):
-    queryset = Magazzino.objects.all().order_by('id')
+    queryset = Magazzino.objects.all()
     serializer_class = Magazzinoserializer
 
 class MagazzinoDelete(generics.RetrieveUpdateDestroyAPIView):
