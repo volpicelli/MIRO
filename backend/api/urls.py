@@ -18,7 +18,8 @@ from api.views import   ResponsabileCantiere,AddOreLavoro,\
                         FattureDetail,FattureList,FornitoriDetail,FornitoriList,\
                         OrdineDetail,OrdineList,PersonaleDetail,PersonaleList,\
                         PersonaleSuCantiere,MagazzinoList,MagazzinoDetail,MagazzinoDelete,MagazzinoArticoli,CantieriPersonale,\
-                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken,OrdineUpdate
+                        OrdineGetTipologia,OrdineCreate,OrdineDaMagazzino,GroupMagazzino,LoginView,CustomAuthToken,OrdineUpdate,\
+                        CloseOrdineCreate
                         
                         
                 
@@ -41,6 +42,9 @@ urlpatterns = [
         path('login',LoginView.as_view()),
         path('ordinedamagazzino',OrdineDaMagazzino.as_view()),
         path('ordinecreate',OrdineCreate.as_view()),
+        path('ordineclose/<int:ordine_id>',CloseOrdineCreate.as_view()),
+
+
         path('azienda/<int:azienda_id>/clienti',ClientiAzienda.as_view()),
         path('azienda/<int:azienda_id>/fornitori',FornitoriAzienda.as_view()),
         path('azienda/<int:azienda_id>/cantieri',CantieriAzienda.as_view()),

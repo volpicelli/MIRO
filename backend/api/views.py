@@ -282,6 +282,46 @@ class OrdineGetTipologia(APIView):
         return Response(o)
 
 
+class CloseOrdineCreate(APIView):
+    serializer_class = Ordineserializer
+
+    def get(self,request,ordine_id):
+        #data = json.loads(request.body)
+
+        o = Ordine.objects.get(pk=ordine_id)
+        if o.completato:
+            return Response({'Messaggio':'Ordine completato e chiuso'})
+        az = o.azienda
+
+        ar = o.ordine_articoli.all()
+        if o.permagazzino:
+            for one in ar:
+                m = Magazzino.objects.get(azienda=az,descrizione=one.descrizione)
+                m.quantita += one.quantita
+                m.quantita_inarrivo -= one.quantita
+                m.prezzo_unitario = (m.prezzo_unitario + one.prezzo_unitario) / 2
+                m.importo_totale = m.quantita *  m.prezzo_unitario
+                m.save()
+            o.completato = True
+            o.save()
+        if o.damagazzino:
+            for one in ar:
+                m = Magazzino.objects.get(azienda=az,descrizione=one.descrizione)
+                m.quantita -= one.quantita
+                m.quantita_impegnata -= one.quantita
+                m.prezzo_unitario = (m.prezzo_unitario + one.prezzo_unitario) / 2
+                m.importo_totale = m.quantita *  m.prezzo_unitario
+                m.save()
+            o.completato =True
+            o.save()
+
+        return Response({'success':True})
+
+
+        
+
+
+
 class OrdineCreate(APIView):
     """
     json={'fornitore':2,
@@ -352,7 +392,8 @@ class OrdineCreate(APIView):
                     permagazzino=permagazzino,
                     damagazzino= damagazzino, 
                     tipologia= data['tipologia'], 
-                    azienda=azienda
+                    azienda=azienda,
+                    completato=False
                     )
         o.save()
         importo = 0.0
@@ -368,8 +409,9 @@ class OrdineCreate(APIView):
                 importo += a.importo_totale
                 a.save()
                 m = Magazzino.objects.get(pk=one['id'])
-                m.quantita = m.quantita - a.quantita
-                m.ordine=o
+                #m.quantita = m.quantita - a.quantita
+                m.quantita_impegnata += a.quantita
+                #m.ordine=o
                 m.save()
             o.importo = importo
             o.save()
@@ -386,18 +428,21 @@ class OrdineCreate(APIView):
                 importo += a.importo_totale
                 a.save()
                 try:
-                    m = Magazzino.objects.get(descrizione=one['descrizione'])
+                    m = Magazzino.objects.get(azienda=azienda,descrizione=one['descrizione'])
                     #if m.exists():
-                    m.quantita = m.quantita+a.quantita
-                    m.prezzo_unitario = (m.prezzo_unitario + a.prezzo_unitario)/2
+                    #m.quantita = m.quantita+a.quantita
+                    #m.prezzo_unitario = (m.prezzo_unitario + a.prezzo_unitario)/2
+                    m.quantita_inarrivo += a.quantita 
                     m.save()
                 except:
                     m = Magazzino()
                     m.descrizione = a.descrizione
-                    m.quantita = a.quantita
-                    m.prezzo_unitario = a.prezzo_unitario
-                    m.importo_totale = a.importo_totale
-                    m.ordine=o
+                    m.quantita = 0 #a.quantita
+                    #m.prezzo_unitario = a.prezzo_unitario
+                    #m.importo_totale = a.importo_totale
+                    #m.ordine=o
+                    m.quantita_impegnata=0
+                    m.quantita_inarrivo += a.quantita 
                     m.azienda=f.azienda
                     m.save()
             o.importo = importo

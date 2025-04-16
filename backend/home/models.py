@@ -371,7 +371,8 @@ class Articoli(models.Model):
         db_table = 'articoli'
 
 class Magazzino(models.Model):
-    quantita_impegnata = models.IntegerField(blank=True, null=True)
+    quantita_impegnata = models.IntegerField(blank=True, null=True,default=0)
+    quantita_inarrivo = models.IntegerField(blank=True, null=True,default=0)
     quantita = models.IntegerField(blank=True, null=True)
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
