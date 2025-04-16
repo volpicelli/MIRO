@@ -37,7 +37,7 @@ urlpatterns = [
         
         path('api-token-auth/', CustomAuthToken.as_view(), name='api_token_auth'),  # <-- And here
 
-        path('file-upload/<int:cantiere_id>',UploadDocumento.as_view()),
+        path('file-upload/<int:doc_id>',UploadDocumento.as_view()),
         path('login',LoginView.as_view()),
         path('ordinedamagazzino',OrdineDaMagazzino.as_view()),
         path('ordinecreate',OrdineCreate.as_view()),
@@ -67,6 +67,7 @@ urlpatterns = [
 
 
 
+        path('documenticreate/<int:cantiere_id>', DocumentiCreate.as_view()),
         path('documenti/list', DocumentiList.as_view()),
         path('documenti/create', DocumentiList.as_view()),
         path('documenti/detail/<int:pk>', DocumentiDetail.as_view()),

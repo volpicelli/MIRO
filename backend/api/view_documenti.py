@@ -14,7 +14,7 @@ from home.models import Documenti,Cantiere,Azienda
 import json
 from django.db.models import Sum
 from django.conf import settings
-
+"""
 class UploadDocumento(APIView):
     serializer_class = Documentiserializer
 
@@ -43,6 +43,53 @@ class UploadDocumento(APIView):
 
         #    for f in files:
 
+        return Response(serializer.data)
+"""
+class UploadDocumento(APIView):
+    serializer_class = Documentiserializer
+
+    def post(self,request,doc_id):
+        file = request.FILES.get('file')
+        #tipologia_doc = request.POST.get('tipologia_documento',None)
+        caricato_da = request.POST.get('caricato_da',None)
+        
+        #file = [request.FILES.get('file[%d]' % i)
+        #for i in range(0, len(request.FILES))]  
+        #files = request.POST.getlist('file')
+        #if cantiere_id == None:
+        #ff=[]
+        #for f in file:
+
+        d = Documenti.objects.get(id=doc_id)
+        
+        d.media=file
+        d.caricato_da = caricato_da
+
+        d.save()
+        #ff.append(d.media.name)
+
+        serializer = self.serializer_class(d)
+
+        #    for f in files:
+
+        return Response(serializer.data)
+    
+
+class DocumentiCreate(APIView):
+    serializer_class = Documentiserializer
+
+    def post(self,request,cantiere_id):
+        data = json.loads(request.body)
+        #data['pollo']='POLLO'
+        id = Cantiere.objects.get(pk=cantiere_id)
+        for one in data['documenti']:
+            d = Documenti(tipologia_id=one['tipologia'],cantiere=id)
+
+            d.save()
+            one['data']=d.data_inserimento
+            one['id'] = d.id
+        serializer = self.serializer_class(Documenti.objects.filter(cantiere=id),many=True)
+        
         return Response(serializer.data)
 
 

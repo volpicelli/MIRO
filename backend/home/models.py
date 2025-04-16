@@ -300,6 +300,8 @@ class Documenti(models.Model):
 
             #albumname= re.sub('[^a-zA-Z0-9]+', '', an.nome)
             return str(a) +'/'+ filename # +albumname +'/'+filename
+        
+        data_inserimento = models.DateField(blank=True, null=True,auto_now_add=True)
         cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_documenti')
         #tipologia = models.CharField(max_length=80, blank=True, null=True)
         media = models.FileField(upload_to=set_path,null=True,blank=True)
@@ -331,7 +333,7 @@ class Ordine(models.Model):
         MATERIALE = "MA",_("Materiale")
         MACCHINARI = "NO",_("Noleggio")
         ALTRO = "AL",_("Altro")
-
+    completato = models.BooleanField(null=False,default=False)
     data_ordine = models.DateField(blank=True, null=True)
     data_consegna= models.DateField(blank=True, null=True)
     importo = models.FloatField(blank=True,null=True) 
@@ -369,6 +371,7 @@ class Articoli(models.Model):
         db_table = 'articoli'
 
 class Magazzino(models.Model):
+    quantita_impegnata = models.IntegerField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
