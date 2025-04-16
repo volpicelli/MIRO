@@ -56,8 +56,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken' ,
     #'djmoney',
     'api',
+    'init',
     'home',
 ]
+
 
 
 
@@ -90,7 +92,7 @@ WSGI_APPLICATION = 'miro.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": 'django.db.backends.postgresql' ,
-        "NAME": 'miro3',
+        "NAME": 'miro4',
         "USER": 'postgres',
         "PASSWORD": 'postgres',
         "HOST": "localhost",
@@ -158,3 +160,6 @@ REST_FRAMEWORK = {
     #),
 }
 #AZIENDACODCF= 2 #"MIRO"
+
+MEDIA_URL = '/documenti/'
+MEDIA_ROOT = os.path.join('/srv', 'documenti')
