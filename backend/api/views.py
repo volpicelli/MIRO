@@ -133,13 +133,7 @@ class ResponsabileCantiere(APIView):
         }
             #ret.append(p)
         return Response(p)
-"""
-    def get(self,request,id_cantiere):
-        a = Assegnato_Cantiere.objects.get(cantiere=id_cantiere,responsabile=True)
-        #a = o.ordine_articoli.all()
-        serializer = self.serializer_class(a.personale,many=True)
-        return Response(serializer.data)
-"""
+
 
 
 class CantieriPersonale(APIView):
@@ -196,12 +190,6 @@ class PersonaleSuCantiere(APIView):
 
         return Response(ret)
         
-        
-        #serializer = self.serializer_class(pers,many=True)
-
-        #return Response(serializer.data)
-
-
 
 
 
@@ -273,7 +261,6 @@ class FornitoriDetail(generics.RetrieveUpdateDestroyAPIView):
         #ss['user']=user
         return Response(serializer.data)
 
-#class FornitoriCondPag(APIView):
 
 
 class OrdineGetTipologia(APIView):
@@ -298,7 +285,10 @@ class CloseOrdineCreate(APIView):
             for one in ar:
                 m = Magazzino.objects.get(azienda=az,descrizione=one.descrizione)
                 m.quantita += one.quantita
+
                 m.quantita_inarrivo -= one.quantita
+                if m.quantita_inarrivo < 0:
+                    m.quantita_inarrivo=0
                 m.prezzo_unitario = (m.prezzo_unitario + one.prezzo_unitario) / 2
                 m.importo_totale = m.quantita *  m.prezzo_unitario
                 m.save()
@@ -309,7 +299,7 @@ class CloseOrdineCreate(APIView):
                 m = Magazzino.objects.get(azienda=az,descrizione=one.descrizione)
                 m.quantita -= one.quantita
                 m.quantita_impegnata -= one.quantita
-                m.prezzo_unitario = (m.prezzo_unitario + one.prezzo_unitario) / 2
+                #m.prezzo_unitario = (m.prezzo_unitario + one.prezzo_unitario) / 2
                 m.importo_totale = m.quantita *  m.prezzo_unitario
                 m.save()
             o.completato =True
@@ -358,6 +348,7 @@ class OrdineCreate(APIView):
                 damagazzino = True
                 try:
                     c  = Cantiere.objects.get(pk=data['cantiere'])
+                    # Il Fornitore e' l'azienda stessa
                     f = Fornitori.objects.get(pk=data['fornitore'])
                     azienda  = c.cliente.azienda
 

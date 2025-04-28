@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class Azienda(models.Model):
     nome = models.CharField(max_length=60, blank=True, null=True)
     codcf = models.CharField(max_length=60, blank=True, null=True,unique=True)
-    current = models.BooleanField(null=True,default=False)
+    #current = models.BooleanField(null=True,default=False)
     descrizione = models.TextField(blank=True, null=True)
     ragione_sociale = models.CharField(max_length=100, blank=True, null=True)
     indirizzo = models.CharField(max_length=100,blank=True, null=True)
@@ -128,6 +128,15 @@ class Fornitori(models.Model):
     class Meta:
         managed = True
         db_table = 'fornitori'
+
+class AziendaFornitori(models.Model):
+
+    azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='aziendafornitore')
+    fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitoriazienda')
+
+    class Meta:
+        managed = True
+        db_table = 'aziendafornitori'
 
 class Sesso(models.TextChoices):
         MASCHIO='M'
@@ -336,7 +345,7 @@ class Ordine(models.Model):
     completato = models.BooleanField(null=False,default=False)
     data_ordine = models.DateField(blank=True, null=True)
     data_consegna= models.DateField(blank=True, null=True)
-    importo = models.FloatField(blank=True,null=True) 
+    importo = models.FloatField(blank=True,null=True,default=0.0) 
     fornitore = models.ForeignKey(Fornitori,null=True,on_delete=models.CASCADE,related_name='fornitori_ordine')
     cantiere = models.ForeignKey(Cantiere,null=True,on_delete=models.CASCADE,related_name='cantiere_ordine')
     damagazzino = models.BooleanField(null=False,default=False)
@@ -356,10 +365,10 @@ class Ordine(models.Model):
 
 class Articoli(models.Model):
     descrizione = models.TextField(blank=True, null=True)
-    quantita = models.IntegerField(blank=True, null=True)
+    quantita = models.IntegerField(blank=True, null=True,default=0)
 
-    prezzo_unitario =  models.FloatField(blank=True,null=True)
-    importo_totale = models.FloatField(blank=True,null=True) #MoneyField( decimal_places=2, default_currency='EUR')
+    prezzo_unitario =  models.FloatField(blank=True,null=True,default=0.0)
+    importo_totale = models.FloatField(blank=True,null=True,default=0.0) #MoneyField( decimal_places=2, default_currency='EUR')
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_articoli')
     #magazzino = models.BooleanField(null=False,default=False)
 
@@ -376,8 +385,8 @@ class Magazzino(models.Model):
     quantita = models.IntegerField(blank=True, null=True)
     descrizione = models.TextField(blank=True, null=True)
     quantita = models.IntegerField(blank=True, null=True)
-    prezzo_unitario = models.FloatField(blank=True,null=True)
-    importo_totale = models.FloatField(blank=True,null=True) 
+    prezzo_unitario = models.FloatField(blank=True,null=True,default=0.0)
+    importo_totale = models.FloatField(blank=True,null=True,default=0.0) 
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
     azienda = models.ForeignKey(Azienda,null=True,on_delete=models.CASCADE,related_name='azienda_magazzino')
 

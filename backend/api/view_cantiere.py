@@ -118,37 +118,5 @@ class CantiereCosto(APIView):
             ct['n_ordini'] = str(im['count'])
             resptot['CostoOrdini'].append(ct)
 
-        """
-        totale_ordini = ordini.aggregate(Sum('importo'))
-        if totale_ordini['importo__sum'] is None:
-            totale_ordini['importo__sum']=0.0
-        else :
-            totale_ordini['importo__sum']=float(totale_ordini['importo__sum'])
-        context['totale_ordini'] = totale_ordini['importo__sum']
-        context['personaleassegnato']= personaleassegnato
-        context['totalepersonale']= totale
-        
-        context['totalecantiere']= totale + totale_ordini['importo__sum']
-        """
+       
         return Response(resptot)
-""" 
-class FattureCantiere(APIView):
-    serializer_class = Fattureserializer
-
-    def get(self,request,id_cantiere):
-        c = Cantiere.objects.get(pk=id_cantiere)
-        fatture = c.cantiere_fatture.all()
-        #resp=[]
-        
-        #if fatture:
-        serializer = self.serializer_class(fatture,many=True)
-            #serializer.data['cantiere'] = id_cantiere
-            #serializer.data['ordine'] = ordine.id
-            #altro = {'fattura':serializer.data, 'cantiere': id_cantiere}
-            
-            #resp.append(serializer.data)
-        #else:
-        #    serializer.data=[]
-
-        return Response(serializer.data)
-"""

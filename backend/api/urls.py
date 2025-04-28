@@ -47,11 +47,13 @@ urlpatterns = [
 
         path('azienda/<int:azienda_id>/clienti',ClientiAzienda.as_view()),
         path('azienda/<int:azienda_id>/fornitori',FornitoriAzienda.as_view()),
+        path('azienda2/<int:azienda_id>/fornitori',FornitoriAzienda2.as_view()),
         path('azienda/<int:azienda_id>/cantieri',CantieriAzienda.as_view()),
         path('azienda/<int:azienda_id>/personale',PersonaleAzienda.as_view()),
         path('azienda/<int:azienda_id>/magazzino',MagazzinoAzienda.as_view()),
         path('azienda/<int:azienda_id>/ordini',OrdiniAzienda.as_view()),
         path('azienda/<int:azienda_id>/fatture',FattureAzienda.as_view()),
+        path('azienda2/<int:azienda_id>/fatture',FattureAzienda2.as_view()),
         
         path('azienda/<int:azienda_id>/personale/cantiere/<int:cantiere_id>',PersonaleAziendaCantiere.as_view()),
         path('azienda/<int:azienda_id>/personale/cantieri',PersonaleAziendaAssegnatiCantieri.as_view()),

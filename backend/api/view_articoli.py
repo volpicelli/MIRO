@@ -15,7 +15,7 @@ import json
 from django.db.models import Sum
 from django.conf import settings
 class ArticoliList(generics.ListCreateAPIView):
-    queryset = Articoli.objects.all().order_by('id')
+    queryset = Articoli.objects.all()
     serializer_class = Articoliserializer
 
 class ArticoliDetail(generics.RetrieveUpdateDestroyAPIView):

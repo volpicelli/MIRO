@@ -52,25 +52,17 @@ class UploadDocumento(APIView):
         file = request.FILES.get('file')
         #tipologia_doc = request.POST.get('tipologia_documento',None)
         caricato_da = request.POST.get('caricato_da',None)
-        
-        #file = [request.FILES.get('file[%d]' % i)
-        #for i in range(0, len(request.FILES))]  
-        #files = request.POST.getlist('file')
-        #if cantiere_id == None:
-        #ff=[]
-        #for f in file:
 
         d = Documenti.objects.get(id=doc_id)
+        #d = ModelWithFileField(file_field=request.FILES["file"])
+        #instance.save()
         
         d.media=file
         d.caricato_da = caricato_da
 
         d.save()
-        #ff.append(d.media.name)
 
         serializer = self.serializer_class(d)
-
-        #    for f in files:
 
         return Response(serializer.data)
     
@@ -103,7 +95,7 @@ class DocumentiList(generics.ListCreateAPIView):
         for one in serializer.data:
             c=Cantiere.objects.get(pk=one['cantiere'])
             a=c.cliente.azienda
-            one['azienda']=a.id
+            one['aziendaSS']=a.id
         return Response(serializer.data)
 
 class DocumentiDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -149,12 +141,8 @@ class DocumentiAzienda(APIView):
                 serializer = self.serializer_class(d,many=True)
                 resp.append(serializer.data)
 
-            #serializer_cantieri = Cantiereserializer(cantieri,many=True)
-            #resp.append(serializer_cantieri.data)
-        
+            
         return Response(resp)
-        a = o.ordine_articoli.all()
-        serializer = self.serializer_class(a,many=True)
-        #return Response(serializer.data)
+        
 
 
