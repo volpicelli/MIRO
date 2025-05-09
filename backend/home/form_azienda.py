@@ -21,7 +21,10 @@ class FormAzienda(forms.ModelForm):
         super(FormAzienda, self).__init__(*args, **kwargs)
         #if instance is None:
         #self.fields['data_ordine'] = forms.DateField(widget=forms.DateInput(attrs={'type':'date'}))
-        
+        #self.fields['descrizione'] = forms.CharField(widget=forms.TextInput(attrs={'col':40,'row':3}))
+        self.fields['descrizione'].widget.attrs['rows'] = 2
+        self.fields['fmemo'].widget.attrs['rows'] = 2
+        self.fields['descrizione'].label = 'Inserisci breve descrizione'
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 

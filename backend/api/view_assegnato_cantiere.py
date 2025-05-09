@@ -50,10 +50,13 @@ class Assegnato_CantiereList(generics.ListCreateAPIView):
     cantiere = ""
 
     def post(self, request, *args, **kwargs):
-        personale = request.POST['personale']
-        cantiere = request.POST['cantiere']
-        ore_lavorate = request.POST['ore_lavorate']
-        p = Personale.objects.get(pk=personale)
+        #data = json.loads(request.body)
+
+        personale = request.POST.get('personale')
+        cantiere = request.POST.get('cantiere')
+        ore_lavorate = request.POST.get('ore_lavorate')
+        responsabile = request.POST.get('responsabile')
+        p = Personale.objects.get(pk=int(personale))
         #c = Cantiere.objects.get(pk=cantiere)
         self.cognome  = p.cognome
         self.cantiere = cantiere
