@@ -382,9 +382,9 @@ class Articoli(models.Model):
 class Magazzino(models.Model):
     quantita_impegnata = models.IntegerField(blank=True, null=True,default=0)
     quantita_inarrivo = models.IntegerField(blank=True, null=True,default=0)
-    quantita = models.IntegerField(blank=True, null=True)
+    quantita = models.IntegerField(blank=True, null=True,default=0)
     descrizione = models.TextField(blank=True, null=True)
-    quantita = models.IntegerField(blank=True, null=True)
+    #quantita = models.IntegerField(blank=True, null=True)
     prezzo_unitario = models.FloatField(blank=True,null=True,default=0.0)
     importo_totale = models.FloatField(blank=True,null=True,default=0.0) 
     ordine = models.ForeignKey(Ordine,null=True,on_delete=models.CASCADE,related_name='ordine_magazzino')
