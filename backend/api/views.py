@@ -433,8 +433,10 @@ class OrdineCreate(APIView):
                     #m.importo_totale = a.importo_totale
                     #m.ordine=o
                     m.quantita_impegnata=0
-                    m.quantita_inarrivo += a.quantita 
                     m.azienda=f.azienda
+                    m.quantita_inarrivo = 0 
+                    m.save()
+                    m.quantita_inarrivo += a.quantita 
                     m.save()
             o.importo = importo
             o.save()
