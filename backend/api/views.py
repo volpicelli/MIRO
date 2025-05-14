@@ -289,7 +289,10 @@ class CloseOrdineCreate(APIView):
                 m.quantita_inarrivo -= one.quantita
                 if m.quantita_inarrivo < 0:
                     m.quantita_inarrivo=0
-                m.prezzo_unitario = (m.prezzo_unitario + one.prezzo_unitario) / 2
+                if m.prezzo_unitario > 0:
+                    m.prezzo_unitario = (m.prezzo_unitario + one.prezzo_unitario) / 2
+                else:
+                    m.prezzo_unitario = one.prezzo_unitario
                 m.importo_totale = m.quantita *  m.prezzo_unitario
                 m.save()
             o.completato = True
